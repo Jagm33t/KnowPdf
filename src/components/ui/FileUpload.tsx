@@ -6,12 +6,12 @@ import React from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 // https://github.com/aws/aws-sdk-js-v3/issues/4126
 
 const FileUpload = () => {
-  // const router = useRouter();
+  const router = useRouter();
   const [uploading, setUploading] = React.useState(false);
   const { mutate, isLoading } = useMutation({
     mutationFn: async ({
@@ -53,7 +53,7 @@ const FileUpload = () => {
           onSuccess: ({ chat_id }) => {
             toast.success("Chat created!");
             console.log("jatt", data)
-            // router.push(`/chat/${chat_id}`);
+            router.push(`/chat/${chat_id}`);
           },
           onError: (err) => {
             toast.error("Error creating chat");
