@@ -16,13 +16,13 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    console.log("Request Body:", body);
+    // console.log("Request Body:", body);
     const { file_key, file_name } = body;
 
-    console.log("Calling loadS3IntoPinecone");
+    // console.log("Calling loadS3IntoPinecone");
     await loadS3IntoPinecone(file_key);
 
-    console.log("Inserting chat into database");
+    // console.log("Inserting chat into database");
     const chat_id =await db.insert(chats).values({
       fileKey: file_key,
       pdfName: file_name,

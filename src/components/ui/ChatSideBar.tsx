@@ -38,6 +38,8 @@ const ChatSideBar = ({ chats, chatId}: Props) => {
               <p className="w-full overflow-hidden text-sm truncate whitespace-nowrap text-ellipsis">
                 {chat.pdfName}
               </p>
+              {/* <link href="/">Home</link> */}
+              {/* <link href="/">Home</link> */}
             </div>
           </Link>
         ))}

@@ -30,7 +30,7 @@ export async function uploadToS3(file: File) {
 
     // Wait for the upload to complete
     await upload;
-    console.log("Successfully uploaded to S3", file_key);
+    // console.log("Successfully uploaded to S3", file_key);
 
     return {
       file_key,
@@ -43,6 +43,8 @@ export async function uploadToS3(file: File) {
 }
 
 export function getS3Url(file_key: string) {
+  console.log("Inside getS3Url function");
   const url = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_S3_REGION}.amazonaws.com/${file_key}`;
+  console.log("jatttttttttttttttttttttt",url)
   return url;
 }
