@@ -1,4 +1,5 @@
 import ChatSideBar from "@/components/ui/ChatSideBar";
+import ChatComponent from "@/components/ui/ChatComponent";
 import PDFViewer from "@/components/ui/PDFViewer";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
@@ -14,7 +15,9 @@ interface Props {
   };
 }
 
-const ChatPage = async ({ params: { chatId } }: Props) => {
+const ChatPage = async ({ params }: Props) => {
+
+  const { chatId } = await params; 
   // Authenticate user
   const { userId } = await auth();
   if (!userId) {
@@ -56,7 +59,7 @@ const ChatPage = async ({ params: { chatId } }: Props) => {
         </div>
         {/* chat component */}
         <div className="flex-[3] border-l-4 border-l-slate-200">
-          {/* <ChatComponent chatId={parseInt(chatId)} /> */}
+          <ChatComponent chatId={parseInt(chatId)} />
         </div>
       </div>
     </div>
