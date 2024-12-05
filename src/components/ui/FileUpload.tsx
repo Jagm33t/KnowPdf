@@ -8,7 +8,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-// https://github.com/aws/aws-sdk-js-v3/issues/4126
+
 
 const FileUpload = () => {
   const router = useRouter();
@@ -57,7 +57,7 @@ const FileUpload = () => {
           },
           onError: (err) => {
             toast.error("Error creating chat");
-            console.error(err);
+            console.log(err);
           },
         });
       } catch (error) {

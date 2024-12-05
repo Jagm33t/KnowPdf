@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
-import { getS3Url } from "@/lib/db/s3";
+import { deleteFromS3 } from "@/lib/db/s3"; 
 import { chats } from "@/lib/db/schema";
-import { loadS3IntoPinecone } from "@/lib/pinecone";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -16,37 +15,24 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    // console.log("Request Body:", body);
-    const { file_key, file_name } = body;
+    const { chatId, fileKey } = body;
 
-    // console.log("Calling loadS3IntoPinecone");
-    await loadS3IntoPinecone(file_key);
+    // Delete the file from S3
+    await deleteFromS3(fileKey);
 
-    // console.log("Inserting chat into database");
-    const chat_id =await db.insert(chats).values({
-      fileKey: file_key,
-      pdfName: file_name,
-      pdfUrl: getS3Url(file_key),
-      userId,
-    }).returning({
-      insertId: chats.id,
-    });
-    
-    // Use `insertId` instead of `insertedId`
-  
+    // Delete the chat record from the database
+    const deletedChat = await db.delete(chats).where({ id: chatId });
 
-    if (!chat_id) {
-      throw new Error("Failed to insert chat");
+    if (!deletedChat) {
+      throw new Error("Failed to delete chat from the database");
     }
 
     return NextResponse.json(
-      { 
-        chat_id: chat_id[0].insertedId,
-       },
+      { message: "Chat deleted successfully" },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error in /api/create-chat:", error.message);
+    console.error("Error in /api/delete-chat:", error.message);
     return NextResponse.json(
       { error: "internal server error" },
       { status: 500 }

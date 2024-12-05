@@ -3,7 +3,7 @@ import ChatComponent from "@/components/ui/ChatComponent";
 import PDFViewer from "@/components/ui/PDFViewer";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-// import { checkSubscription } from "@/lib/subscription";
+import { checkSubscription } from "@/lib/subscription";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
@@ -35,7 +35,7 @@ const ChatPage = async ({ params }: Props) => {
 
   // Find the chat with the provided chatId
   const currentChat = _chats.find((chat) => chat.id === parseInt(chatId));
-  // console.log("currentChat:", currentChat); // Log the selected chat
+  const isPro = await checkSubscription();
 
   // If chat not found, redirect
   if (!currentChat) {
@@ -44,14 +44,14 @@ const ChatPage = async ({ params }: Props) => {
 
   // Log the pdfUrl for debugging
   const pdfUrl = currentChat?.pdfUrl || "";
-  console.log("PDF URL:", pdfUrl); // Log the actual PDF URL
+
 
   return (
     <div className="flex max-h-screen overflow-scroll">
       <div className="flex w-full max-h-screen overflow-scroll">
         {/* chat sidebar */}
         <div className="flex-[1] max-w-xs">
-          <ChatSideBar chats={_chats} chatId={parseInt(chatId)} />
+        <ChatSideBar chats={_chats} chatId={parseInt(chatId)} isPro={isPro} />
         </div>
         {/* pdf viewer */}
         <div className="max-h-screen p-4 oveflow-scroll flex-[5]">

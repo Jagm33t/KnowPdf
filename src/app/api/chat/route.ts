@@ -46,9 +46,28 @@ export async function POST(req: Request) {
         prompt,
         ...messages.filter((message: Message) => message.role === "user"),
       ],
+      async onFinish({ text, toolCalls, toolResults, finishReason, usage }) {
+        // Store the user message and AI response to the database
+        // Store user message
+        await db.insert(_messages).values({
+          chatId,
+          content: lastMessage.content,
+          role: "user",
+        });
+
+        // Store AI response
+        await db.insert(_messages).values({
+          chatId,
+          content: text,
+          role: "system",
+        });
+
+        // Optional: log tool calls or results if necessary
+        console.log({ toolCalls, toolResults, finishReason, usage });
+      },
     });
 
-    // Convert the result to a data stream response
+    // Return the result as a streaming response
     return result.toDataStreamResponse();
   } catch (error) {
     console.error("Error processing OpenAI stream:", error);
