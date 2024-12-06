@@ -17,22 +17,38 @@ type Props = {
 
 const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
   const [loading, setLoading] = React.useState(false);
+  console.log("chats",chats);
 
-  // Handle the delete action
-  const handleDelete = async (chatId: number) => {
+
+  
+  const handleDelete = async (chatId: number, fileKey: string, chats:DrizzleChat) => {
     try {
       setLoading(true);
-      // Call API to delete the file from S3 and delete chat record from DB
-      const response = await axios.post("/api/delete-chat", { chatId});
-      console.log("request delte made")
+      console.log("Deleting chat with ID:", chatId, "File Key:", fileKey);
+      console.log("chats",chats);
+
+      // Step 1: Delete the messages associated with the chatId
+      const deleteMessagesResponse = await axios.delete("/api/delete-messages", {
+        data: { chatId },
+      });
+
+      if (deleteMessagesResponse.status !== 200) {
+        throw new Error("Failed to delete messages.");
+      }
+
+      // Send request to delete the PDF file from S3 using the fileKey
+      const response = await axios.delete("/api/delete-chat", {
+        data: { chatId, fileKey },
+      });
+
       if (response.status === 200) {
-        toast.success("Chat deleted successfully!");
+        toast.success("File deleted successfully!");
       } else {
-        toast.error("Failed to delete chat.");
+        toast.error("Failed to delete file.");
       }
     } catch (error) {
-      console.error("Error deleting chat:", error);
-      toast.error("Error deleting chat.");
+      console.error("Error deleting file:", error);
+      toast.error("Error deleting file.");
     } finally {
       setLoading(false);
     }
@@ -60,6 +76,13 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
                   "hover:text-white": chat.id !== chatId,
                 })}
               >
+                  <Button
+              className="ml-2 text-red-500"
+              onClick={() => handleDelete(chat.id, chat.fileKey)} // Pass chat.id and chat.fileKey
+              disabled={loading}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
                 <MessageCircle className="mr-2" />
                 <p className="w-full overflow-hidden text-sm truncate whitespace-nowrap text-ellipsis">
                   {chat.pdfName}
@@ -68,16 +91,10 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
             </Link>
 
             {/* Delete button */}
-            <Button
-              className="ml-2 text-red-500"
-              onClick={() => handleDelete(chat.id)} // pass the chat id and file key for deletion
-              disabled={loading}
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+          
           </div>
         ))}
-        
+
         <Button
           className="mt-2 text-white bg-slate-700"
           disabled={loading}

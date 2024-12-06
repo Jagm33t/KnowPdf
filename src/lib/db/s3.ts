@@ -41,29 +41,39 @@ export async function uploadToS3(file: File) {
     throw new Error("File upload failed");
   }
 }
-export async function deleteFromS3(fileKey: string) {
+
+
+// Function to delete file from S3 based on chatId
+export async function deleteS3File(fileKey: string) {
   try {
     const s3 = new AWS.S3({
-      region: process.env.NEXT_PUBLIC_S3_REGION,
+      region: process.env.NEXT_PUBLIC_S3_REGION!,
       credentials: {
         accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID!,
         secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY!,
       },
     });
 
-    const params = {
-      Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
-      Key: fileKey,  // The file key is required to delete the file
-    };
+    // Delete the file from S3
+    const result = await s3
+      .deleteObject({
+        Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
+        Key: fileKey,
+      })
+      .promise();
 
-    // Deleting the file from S3
-    await s3.deleteObject(params).promise();
     console.log(`Successfully deleted file: ${fileKey}`);
+
+    // Return success status
+    return { success: true, result };
   } catch (error) {
-    console.error("Error deleting from S3:", error);
-    throw new Error("File deletion failed");
+    console.error("Error deleting file from S3:", error);
+
+    // Return failure status
+    return { success: false, error };
   }
 }
+
 
 export function getS3Url(file_key: string) {
   console.log("Inside getS3Url function");
