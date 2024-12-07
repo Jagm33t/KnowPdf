@@ -8,12 +8,10 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-
-
 const FileUpload = () => {
   const router = useRouter();
-  const [uploading, setUploading] = React.useState(false);
-  const { mutate, isLoading } = useMutation({
+  const [uploading, setUploading] = React.useState(false); // Controls the uploading state
+  const { mutate } = useMutation({
     mutationFn: async ({
       file_key,
       file_name,
@@ -25,7 +23,6 @@ const FileUpload = () => {
         file_key,
         file_name,
       });
-      // console.log('Response:', response.data); 
       return response.data;
     },
   });
@@ -36,37 +33,41 @@ const FileUpload = () => {
     onDrop: async (acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file.size > 10 * 1024 * 1024) {
-        // bigger than 10mb!
         toast.error("File too large");
         return;
       }
 
       try {
-        setUploading(true);
+        setUploading(true); // Set uploading state to true when the process starts
         const data = await uploadToS3(file);
-        console.log("meow", data);
+
         if (!data?.file_key || !data.file_name) {
-          toast.error("Something went wrong");
+          toast.error("Something went wrong during upload");
           return;
         }
+
         mutate(data, {
           onSuccess: ({ chat_id }) => {
             toast.success("Chat created!");
-            console.log("jatt", data)
             router.push(`/chat/${chat_id}`);
           },
           onError: (err) => {
             toast.error("Error creating chat");
-            console.log(err);
+            console.error(err);
+          },
+          onSettled: () => {
+            setUploading(false); // Ensure the state resets after the mutation
           },
         });
       } catch (error) {
-        console.log(error);
+        console.error("Upload error:", error);
+        toast.error("Upload failed");
       } finally {
-        setUploading(false);
+        // Do not reset uploading here to ensure the mutation completes first
       }
     },
   });
+
   return (
     <div className="p-2 bg-white rounded-xl">
       <div
@@ -76,12 +77,14 @@ const FileUpload = () => {
         })}
       >
         <input {...getInputProps()} />
-        {uploading || isLoading ? (
+        {uploading ? (
           <>
-            {/* loading state */}
             <Loader2 className="h-10 w-10 text-blue-500 animate-spin" />
             <p className="mt-2 text-sm text-slate-400">
-              Spilling Tea to GPT...
+              Uploading your file...
+            </p>
+            <p className="mt-2 text-sm text-slate-400">
+              You will directed to chats soon ...
             </p>
           </>
         ) : (

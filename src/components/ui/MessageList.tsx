@@ -18,7 +18,7 @@ const MessageList = ({ messages, isLoading }: Props) => {
   }
   if (!messages) return <></>;
   return (
-    <div className="flex flex-col gap-2 px-4">
+    <div className="flex flex-col mb-1 gap-4 px-4">
       {messages.map((message) => {
         return (
           <div
@@ -30,9 +30,9 @@ const MessageList = ({ messages, isLoading }: Props) => {
           >
             <div
               className={cn(
-                "rounded-lg px-3 text-sm py-1 shadow-md ring-1 ring-gray-900/10",
+                "rounded-lg px-3 text-sm py-1 shadow-md",
                 {
-                  "bg-blue-600 text-white": message.role === "user",
+                  "bg-gray-100 text-black": message.role === "user",
                 }
               )}
             >
