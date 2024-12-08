@@ -6,8 +6,9 @@ import { Button } from "./button";
 import { MessageCircle, PlusCircle, Trash2, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import axios from "axios";
-// import SubscriptionButton from "./SubscriptionButton";
 import { toast } from "react-hot-toast";
+import SubscriptionButton from "./SubscriptionButton";
+
 
 type Props = {
   chats: DrizzleChat[];
@@ -15,7 +16,7 @@ type Props = {
   isPro: boolean;
 };
 
-const ChatSideBar = ({ chats, chatId}: Props) => {
+const ChatSideBar = ({ chats, chatId, isPro}: Props) => {
   const [loading, setLoading] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState<number | null>(null);
 
@@ -52,9 +53,9 @@ const ChatSideBar = ({ chats, chatId}: Props) => {
   };
 
   return (
-    <div className="w-full h-screen p-4 text-black bg-gray-100">
+    <div className="flex flex-col h-screen p-4 text-[#545454] bg-[#f8fafc]">
       <Link href="/">
-        <Button className="w-full border-dashed hover:bg-gray-300  text-black bg-gray-100 border-gray border">
+        <Button className="w-full rounded-md hover:bg-[#e9ebec]  text-[#545454] bg-[#f8fafc] border-[#545454] border">
           <PlusCircle className="mr-2 w-4 h-4" />
           New Chat
         </Button>
@@ -64,13 +65,13 @@ const ChatSideBar = ({ chats, chatId}: Props) => {
         {chats.map((chat) => (
           <div
             key={chat.id}
-            className="flex items-center justify-between rounded-lg p-3 text-slate-300"
+            className="flex items-center justify-between rounded-lg p-3 text-slate-700"
           >
             <Link href={`/chat/${chat.id}`}>
               <div
-                className={cn("flex items-center", {
-                  "bg-gray-100 text-black": chat.id === chatId,
-                  "hover:text-black": chat.id !== chatId,
+                className={cn("flex items-center p-1 rounded-md", {
+                  "bg-[#e8eaec] text-black": chat.id === chatId,
+                  "hover:text-[#545454]": chat.id !== chatId,
                 })}
               >
                 <MessageCircle className="mr-2" />
@@ -81,11 +82,7 @@ const ChatSideBar = ({ chats, chatId}: Props) => {
                   >
                        {chat.pdfName}
                       </p>
-              </div>
-            </Link>
-
-            {/* Dropdown Menu */}
-            <div className="relative">
+                      <div className="relative">
               <Button
                 variant="ghost"
                 className="p-2"
@@ -96,7 +93,7 @@ const ChatSideBar = ({ chats, chatId}: Props) => {
                 <MoreVertical className="w-5 h-5" />
               </Button>
               {openMenu === chat.id && (
-                <div className="absolute right-0 mt-2 w-40 bg-gray-50 shadow-md rounded-lg">
+                <div className="absolute right-0 mt-2 w-40 bg-gray-100 shadow-md rounded-lg">
                   <div
                     className="p-2 text-red-500 cursor-pointer hover:bg-gray-300 flex items-center"
                     onClick={() => {
@@ -110,11 +107,14 @@ const ChatSideBar = ({ chats, chatId}: Props) => {
                 </div>
               )}
             </div>
+              </div>
+            </Link>
+
           </div>
         ))}
-
+   <div className="mt-auto space-y-2"></div>
         <Button
-          className="mt-2 bg-slate-600"
+          className="text-[#545454] bg-[#f9f9f9] hover:bg-[#192c56] hover:text-white"
           disabled={loading}
           onClick={async () => {
             setLoading(true);
@@ -125,7 +125,7 @@ const ChatSideBar = ({ chats, chatId}: Props) => {
         >
           Upgrade to Pro Plan
         </Button>
-
+       <SubscriptionButton isPro={isPro}/>
 
       </div>
     </div>

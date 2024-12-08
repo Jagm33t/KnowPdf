@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React from "react";
 import { Input } from "./input";
@@ -11,7 +11,7 @@ import axios from "axios";
 import { Message } from "ai";
 
 interface Props {
-  chatId: number
+  chatId: number;
 }
 
 const ChatComponent = ({ chatId }: Props) => {
@@ -44,30 +44,33 @@ const ChatComponent = ({ chatId }: Props) => {
   }, [messages]);
 
   return (
-    <div
-      className="relative max-h-screen overflow-scroll"
-      id="message-container"
-    >
-      {/* header */}
-      <div className="sticky top-0 inset-x-0 p-2 bg-white h-fit">
-        <h3 className="text-xl font-bold">Chat</h3>
+    <div className="flex flex-col h-screen bg-gray-50">
+      {/* Header */}
+      <div className="sticky top-0 inset-x-0 p-2 bg-gray-50">
+        <h3 className="text-xl">Chat</h3>
       </div>
 
-      {/* message list */}
-      <MessageList messages={messages} isLoading={isLoading} />
+      {/* Message List */}
+      <div
+        id="message-container"
+        className="flex-1 overflow-y-auto px-4 py-2"
+      >
+        <MessageList messages={messages} isLoading={isLoading} />
+      </div>
 
+      {/* Input Form */}
       <form
         onSubmit={handleSubmit}
-        className="sticky bottom-0 inset-x-0 px-5 py-4 bg-white"
+        className="w-full bg-gray-50 px-5 py-4 "
       >
-        <div className="flex">
+        <div className="flex items-center ">
           <Input
             value={input}
             onChange={handleInputChange}
             placeholder="Ask any question..."
-            className="w-full"
+            className="w-full "
           />
-          <Button className="bg-gray-500 ml-2">
+          <Button type="submit" className="bg-[#192c56] ml-2">
             <Send className="h-4 w-4" />
           </Button>
         </div>

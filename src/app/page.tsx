@@ -9,7 +9,7 @@ import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import MaxWidthWrapper from '@/components/ui/MaxWidthWrapper';
-import Image from "next/image";
+// import Image from "next/image";
 import Navbar from "@/components/ui/Navbar";
 
 export default async function Home() {
