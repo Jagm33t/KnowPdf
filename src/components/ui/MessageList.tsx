@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Message } from "ai/react";
 import { Loader2 } from "lucide-react";
 import React from "react";
+import Image from 'next/image';
 
 type Props = {
   isLoading: boolean;
@@ -32,7 +33,7 @@ const MessageList = ({ messages, isLoading }: Props) => {
               className={cn(
                 "rounded-lg px-3 text-sm py-1",
                 {
-                  "bg-gray-200 text-black": message.role === "user",
+                  "bg-[#f6f5f8] text-[#313336]": message.role === "user",
                 }
               )}
             >

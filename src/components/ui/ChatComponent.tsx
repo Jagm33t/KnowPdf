@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "./input";
 import { useChat } from "ai/react";
 import { Button } from "./button";
@@ -25,7 +25,7 @@ const ChatComponent = ({ chatId }: Props) => {
     },
   });
 
-  const { input, handleInputChange, handleSubmit, messages } = useChat({
+  const { input, handleInputChange, handleSubmit, messages, setInput } = useChat({
     api: "/api/chat",
     body: {
       chatId,
@@ -44,9 +44,9 @@ const ChatComponent = ({ chatId }: Props) => {
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-white">
       {/* Header */}
-      <div className="sticky top-0 inset-x-0 p-2 bg-gray-50">
+      <div className="sticky top-0 inset-x-0 p-2 bg-white">
         <h3 className="text-xl">Chat</h3>
       </div>
 
@@ -58,17 +58,45 @@ const ChatComponent = ({ chatId }: Props) => {
         <MessageList messages={messages} isLoading={isLoading} />
       </div>
 
+      {/* Buttons for Predefined Prompts */}
+      <div className="w-full bg-white px-5 py-3 flex gap-2">
+        <Button
+          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+          onClick={() => setInput("Summarize the content.")}
+        >
+          Summarize
+        </Button>
+        <Button
+          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+          onClick={() => setInput("Highlight important information in the content.")}
+        >
+          Highlight
+        </Button>
+        <Button
+          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+          onClick={() => setInput("Simplify the content.")}
+        >
+          Simplify
+        </Button>
+        <Button
+          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+          onClick={() => setInput("Enhance the content.")}
+        >
+          Enhance
+        </Button>
+      </div>
+
       {/* Input Form */}
       <form
         onSubmit={handleSubmit}
-        className="w-full bg-gray-50 px-5 py-4 "
+        className="w-full bg-white px-5 py-4"
       >
-        <div className="flex items-center ">
+        <div className="flex items-center">
           <Input
             value={input}
             onChange={handleInputChange}
             placeholder="Ask any question..."
-            className="w-full "
+            className="w-full"
           />
           <Button type="submit" className="bg-[#192c56] ml-2">
             <Send className="h-4 w-4" />

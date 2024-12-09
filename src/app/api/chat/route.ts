@@ -52,12 +52,12 @@ export async function POST(req: Request) {
     
     // Use the streamText function with the OpenAI model
     const result = streamText({
-      model: openai("gpt-3.5-turbo"), // Or "gpt-4" based on your requirements
+      model: openai("gpt-3.5-turbo"), 
       messages: [
         prompt,
         ...messages.filter((message: Message) => message.role === "user"),
       ],
-      temperature: 0.5,
+      temperature: 0.3,
       async onFinish({ text, toolCalls, toolResults, finishReason, usage }) {
         // Store the user message and AI response to the database
         // Store user message
