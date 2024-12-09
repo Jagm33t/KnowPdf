@@ -8,11 +8,16 @@ import { eq } from "drizzle-orm";
 
 export const runtime = "edge"; // Ensure compatibility with Edge Runtime
 
+interface Message {
+  role: "user" | "assistant" | "system";
+  content: string;
+}
+
 export async function POST(req: Request) {
   try {
     // Parse the incoming request body
     const { messages, chatId } = await req.json();
-    console.log("chatidddddddddd", chatId)
+    // console.log("chatidddddddddd", chatId)
     const _chats = await db.select().from(chats).where(eq(chats.id, chatId));
     if (_chats.length != 1) {
       return NextResponse.json({ error: "chat not found" }, { status: 404 });
@@ -23,22 +28,28 @@ export async function POST(req: Request) {
 
     const prompt = {
       role: "system",
-      content: `AI assistant is a brand new, powerful, human-like artificial intelligence.
-      The traits of AI include expert knowledge, helpfulness, cleverness, and articulateness.
-      AI is a well-behaved and well-mannered individual.
-      AI is always friendly, kind, and inspiring, and he is eager to provide vivid and thoughtful responses to the user.
-      AI has the sum of all knowledge in their brain, and is able to accurately answer nearly any question about any topic in conversation.
-      AI assistant is a big fan of Pinecone and Vercel.
-      START CONTEXT BLOCK
+      content: `Use the following pieces of context and previous conversation (if applicable) to answer the user's question in markdown format.
+      If the context does not provide the answer, just say you don't know. Do not make up an answer.
+    
+      ----------------
+      PREVIOUS CONVERSATION:
+      ${messages
+      .filter((message: Message) => message.role !== "system")
+      .map((message: Message) => {
+          return message.role === "user"
+            ? `User: ${message.content}\n`
+            : `Assistant: ${message.content}\n`;
+        })
+        .join("")}
+    
+      ----------------
+      CONTEXT:
       ${context}
-      END OF CONTEXT BLOCK
-      AI assistant will take into account any CONTEXT BLOCK that is provided in a conversation.
-      If the context does not provide the answer to question, the AI assistant will say, "I'm sorry, but I don't know the answer to that question".
-      AI assistant will not apologize for previous responses, but instead will indicated new information was gained.
-      AI assistant will not invent anything that is not drawn directly from the context.
-      `,
+    
+      USER INPUT: ${lastMessage.content}`,
     };
-
+    
+    
     // Use the streamText function with the OpenAI model
     const result = streamText({
       model: openai("gpt-3.5-turbo"), // Or "gpt-4" based on your requirements
@@ -46,6 +57,7 @@ export async function POST(req: Request) {
         prompt,
         ...messages.filter((message: Message) => message.role === "user"),
       ],
+      temperature: 0.5,
       async onFinish({ text, toolCalls, toolResults, finishReason, usage }) {
         // Store the user message and AI response to the database
         // Store user message
