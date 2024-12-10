@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { Input } from "./input";
 import { useChat } from "ai/react";
 import { Button } from "./button";
-import { Send, Share2, Download, RefreshCw } from "lucide-react"; // ShadCN (Lucide) icons
+import { Send, Share, Download, RefreshCw, Trash } from "lucide-react"; // ShadCN (Lucide) icons
 import MessageList from "./MessageList";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -54,32 +54,31 @@ const ChatComponent = ({ chatId }: Props) => {
         <div className="flex gap-4">
           {/* Share Icon with Hover Text */}
           <div className="group relative flex items-center">
-            <button className="hover:text-blue-500" title="Share chat">
-              <Share2 className="text-xl" />
+            <button className="hover:text-[#33679c]" title="Share chat">
+              <Share className="w-5"/>
             </button>
-            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 text-sm text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-opacity">
-              Share chat
-            </span>
           </div>
 
           {/* Download Icon with Hover Text */}
           <div className="group relative flex items-center">
-            <button className="hover:text-blue-500" title="Download chat">
-              <Download className="text-xl" />
+            <button className="hover:text-[#33679c]"  title="Download chat">
+              <Download className="w-5"/>
             </button>
-            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 text-sm text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-opacity">
-              Download chat
-            </span>
+         
           </div>
 
           {/* Refresh Icon with Hover Text */}
           <div className="group relative flex items-center">
-            <button className="hover:text-blue-500" title="Refresh chat">
-              <RefreshCw className="text-xl" />
+            <button className="hover:text-[#33679c]"  title="Reset chat">
+              <RefreshCw className="w-5"/>
             </button>
-            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 text-sm text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-opacity">
-              Refresh chat
-            </span>
+            
+          </div>
+          <div className="group relative flex items-center">
+            <button className="hover:text-[#33679c]"  title="Trash chat">
+              <Trash className="w-5" />
+            </button>
+            
           </div>
         </div>
       </div>
