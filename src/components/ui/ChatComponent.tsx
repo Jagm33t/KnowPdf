@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Input } from "./input";
 import { useChat } from "ai/react";
 import { Button } from "./button";
-import { Send } from "lucide-react";
+import { Send, Share2, Download, RefreshCw } from "lucide-react"; // ShadCN (Lucide) icons
 import MessageList from "./MessageList";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -15,6 +15,7 @@ interface Props {
 }
 
 const ChatComponent = ({ chatId }: Props) => {
+  // Fetching messages via useQuery
   const { data, isLoading } = useQuery({
     queryKey: ["chat", chatId],
     queryFn: async () => {
@@ -25,6 +26,7 @@ const ChatComponent = ({ chatId }: Props) => {
     },
   });
 
+  // Chat hook initialization
   const { input, handleInputChange, handleSubmit, messages, setInput } = useChat({
     api: "/api/chat",
     body: {
@@ -33,7 +35,8 @@ const ChatComponent = ({ chatId }: Props) => {
     initialMessages: data || [],
   });
 
-  React.useEffect(() => {
+  // Scroll to bottom when new messages are added
+  useEffect(() => {
     const messageContainer = document.getElementById("message-container");
     if (messageContainer) {
       messageContainer.scrollTo({
@@ -46,8 +49,39 @@ const ChatComponent = ({ chatId }: Props) => {
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
-      <div className="sticky top-0 inset-x-0 p-2 bg-white">
+      <div className="flex justify-between sticky top-0 inset-x-0 p-2 bg-white">
         <h3 className="text-xl">Chat</h3>
+        <div className="flex gap-4">
+          {/* Share Icon with Hover Text */}
+          <div className="group relative flex items-center">
+            <button className="hover:text-blue-500" title="Share chat">
+              <Share2 className="text-xl" />
+            </button>
+            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 text-sm text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-opacity">
+              Share chat
+            </span>
+          </div>
+
+          {/* Download Icon with Hover Text */}
+          <div className="group relative flex items-center">
+            <button className="hover:text-blue-500" title="Download chat">
+              <Download className="text-xl" />
+            </button>
+            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 text-sm text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-opacity">
+              Download chat
+            </span>
+          </div>
+
+          {/* Refresh Icon with Hover Text */}
+          <div className="group relative flex items-center">
+            <button className="hover:text-blue-500" title="Refresh chat">
+              <RefreshCw className="text-xl" />
+            </button>
+            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 text-sm text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-opacity">
+              Refresh chat
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Message List */}

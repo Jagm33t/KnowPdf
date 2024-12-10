@@ -3,20 +3,21 @@ import { DrizzleChat } from "@/lib/db/schema";
 import Link from "next/link";
 import React from "react";
 import { Button } from "./button";
-import { MessageCircle, PlusCircle, Trash2, MoreVertical } from "lucide-react";
+import { MessageCircle, Plus, Trash2, MoreVertical } from "lucide-react"; // Import Plus icon instead of PlusCircle
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import SubscriptionButton from "./SubscriptionButton";
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Props = {
   chats: DrizzleChat[];
   chatId: number;
   isPro: boolean;
+  className?: string;
 };
 
-const ChatSideBar = ({ chats, chatId, isPro}: Props) => {
+const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
   const [loading, setLoading] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState<number | null>(null);
 
@@ -53,14 +54,28 @@ const ChatSideBar = ({ chats, chatId, isPro}: Props) => {
   };
 
   return (
+    
     <div className="flex flex-col h-screen p-4 text-[#545454] bg-[#f8fafc]">
-      <Link href="/">
-        <Button className="w-full rounded-md hover:bg-[#e9ebec]  text-[#545454] bg-[#f8fafc] border-[#545454] border">
-          <PlusCircle className="mr-2 w-4 h-4" />
-          New Chat
-        </Button>
-      </Link>
+      {/* Avatar section */}
+      <div className="flex  items-center mb-4">
+        <Avatar className="w-8 h-8 mt-1">
+          <AvatarImage src="/chat-logo.png" className="object-cover" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+        <h1 className="text-xl text-black ml-1">Know Your PDF</h1>
+      </div>
 
+      {/* New Chat Button (moved to a new div below the logo) */}
+      <div className="w-full mb-4">
+        <Link href="/">
+          <Button className="w-full rounded-md hover:bg-[#33679c] hover:text-white text-[#545454] bg-[#f8fafc] border-[#545454] border">
+            <Plus className="mr-2 w-4 h-4" /> 
+           Start  New Chat
+          </Button>
+        </Link>
+      </div>
+
+      {/* Chat list */}
       <div className="flex max-h-screen overflow-scroll pb-20 flex-col gap-2 mt-4">
         {chats.map((chat) => (
           <div
@@ -69,52 +84,54 @@ const ChatSideBar = ({ chats, chatId, isPro}: Props) => {
           >
             <Link href={`/chat/${chat.id}`}>
               <div
-                className={cn("flex items-center p-1 rounded-md", {
-                  "bg-[#e8eaec] text-black": chat.id === chatId,
-                  "hover:text-[#545454]": chat.id !== chatId,
+                className={cn("flex items-center  rounded-md", {
+                  "bg-[#e9ecef] text-black": chat.id === chatId,
+                  "hover:text-[#080808]": chat.id !== chatId,
                 })}
               >
-                <MessageCircle className="mr-2" />
+                <MessageCircle className="mr-2 w-3" />
                 <p
-                  className="text-sm truncate overflow-hidden whitespace-nowrap"
+                  className="text-xs truncate overflow-hidden whitespace-nowrap"
                   style={{ maxWidth: "150px" }} // Adjust the maxWidth to your preference
-                    title={chat.pdfName} // Tooltip to show full name
+                  title={chat.pdfName} 
+                >
+                  {chat.pdfName}
+                </p>
+                <div className="relative">
+                  <Button
+                    variant="ghost"
+                    className="p-2"
+                    onClick={() =>
+                      setOpenMenu((prev) => (prev === chat.id ? null : chat.id))
+                    }
                   >
-                       {chat.pdfName}
-                      </p>
-                      <div className="relative">
-              <Button
-                variant="ghost"
-                className="p-2"
-                onClick={() =>
-                  setOpenMenu((prev) => (prev === chat.id ? null : chat.id))
-                }
-              >
-                <MoreVertical className="w-5 h-5" />
-              </Button>
-              {openMenu === chat.id && (
-                <div className="absolute right-0 mt-2 w-40 bg-gray-100 shadow-md rounded-lg">
-                  <div
-                    className="p-2 text-red-500 cursor-pointer hover:bg-gray-300 flex items-center"
-                    onClick={() => {
-                      setOpenMenu(null);
-                      handleDelete(chat.id, chat.fileKey);
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
-                  </div>
+                    <MoreVertical className="w-5 h-5" />
+                  </Button>
+                  {openMenu === chat.id && (
+                    <div className="absolute right-0 mt-2 w-40 bg-gray-100 shadow-md rounded-lg">
+                      <div
+                        className="p-2 text-red-500 cursor-pointer hover:bg-gray-300 flex items-center"
+                        onClick={() => {
+                          setOpenMenu(null);
+                          handleDelete(chat.id, chat.fileKey);
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
               </div>
             </Link>
-
           </div>
         ))}
-   <div className="mt-auto space-y-2"></div>
+      </div>
+
+      {/* Move Upgrade and SubscriptionButton to the bottom */}
+      <div className="w-full mt-auto space-y-2">
         <Button
-          className="text-[#545454] bg-[#f9f9f9] hover:bg-[#192c56] hover:text-white"
+          className=" w-full text-white bg-[#192c56] hover:bg-[#33679c] hover:text-white border-gray-200 border"
           disabled={loading}
           onClick={async () => {
             setLoading(true);
@@ -125,8 +142,7 @@ const ChatSideBar = ({ chats, chatId, isPro}: Props) => {
         >
           Upgrade to Pro Plan
         </Button>
-       <SubscriptionButton isPro={isPro}/>
-
+        <SubscriptionButton  isPro={isPro} />
       </div>
     </div>
   );
