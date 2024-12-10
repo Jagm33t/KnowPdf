@@ -3,12 +3,14 @@ import { DrizzleChat } from "@/lib/db/schema";
 import Link from "next/link";
 import React from "react";
 import { Button } from "./button";
-import { MessageCircle, Plus, Trash2, MoreVertical } from "lucide-react"; // Import Plus icon instead of PlusCircle
+import { MessageCircle, Plus, Trash2, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import SubscriptionButton from "./SubscriptionButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import FileUpload from "./FileUpload"; // Import FileUpload here
 
 type Props = {
   chats: DrizzleChat[];
@@ -54,7 +56,6 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
   };
 
   return (
-    
     <div className="flex flex-col h-screen p-4 text-[#545454] bg-[#f8fafc]">
       {/* Avatar section */}
       <div className="flex  items-center mb-4">
@@ -65,42 +66,53 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
         <h1 className="text-xl text-black ml-1">Know Your PDF</h1>
       </div>
 
-      {/* New Chat Button (moved to a new div below the logo) */}
+      {/* Start New Chat Button */}
       <div className="w-full mb-4">
-        <Link href="/">
-          <Button className="w-full rounded-md hover:bg-[#33679c] hover:text-white text-[#545454] bg-[#f8fafc] border-[#545454] border">
+        <Dialog>
+          <DialogTrigger asChild>
+          <Button className="w-full text-white bg-[#192c56] hover:bg-[#33679c] hover:text-white border-gray-200 border">
             <Plus className="mr-2 w-4 h-4" /> 
            Start  New Chat
           </Button>
-        </Link>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Start New Chat</DialogTitle>
+              <DialogDescription>
+                Please upload a PDF to start a new chat. Only PDF files are accepted.
+              </DialogDescription>
+            </DialogHeader>
+            <FileUpload /> {/* Directly call FileUpload inside the dialog */}
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Chat list */}
-      <div className="flex max-h-screen overflow-scroll pb-20 flex-col gap-2 mt-4">
+      <div className="flex max-h-screen overflow-scroll pb-20 flex-col gap-1 mt-4">
         {chats.map((chat) => (
           <div
             key={chat.id}
-            className="flex items-center justify-between rounded-lg p-3 text-slate-700"
+            className="flex items-center justify-between rounded-lg p-1 text-slate-600"
           >
             <Link href={`/chat/${chat.id}`}>
               <div
-                className={cn("flex items-center  rounded-md", {
-                  "bg-[#e9ecef] text-black": chat.id === chatId,
+                className={cn("flex items-center rounded-md", {
+                  "bg-[#e9ecef] text-slate-700 font-bold": chat.id === chatId,
                   "hover:text-[#080808]": chat.id !== chatId,
                 })}
               >
-                <MessageCircle className="mr-2 w-3" />
+                <MessageCircle className="mr-1 w-3" />
                 <p
                   className="text-xs truncate overflow-hidden whitespace-nowrap"
-                  style={{ maxWidth: "150px" }} // Adjust the maxWidth to your preference
-                  title={chat.pdfName} 
+                  style={{ maxWidth: "160px" }}
+                  title={chat.pdfName}
                 >
                   {chat.pdfName}
                 </p>
                 <div className="relative">
                   <Button
                     variant="ghost"
-                    className="p-2"
+                    className="p-1"
                     onClick={() =>
                       setOpenMenu((prev) => (prev === chat.id ? null : chat.id))
                     }
@@ -128,7 +140,7 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
         ))}
       </div>
 
-      {/* Move Upgrade and SubscriptionButton to the bottom */}
+      {/* Upgrade and Subscription buttons */}
       <div className="w-full mt-auto space-y-2">
         <Button
           className=" w-full text-white bg-[#192c56] hover:bg-[#33679c] hover:text-white border-gray-200 border"
@@ -142,7 +154,7 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
         >
           Upgrade to Pro Plan
         </Button>
-        <SubscriptionButton  isPro={isPro} />
+        <SubscriptionButton isPro={isPro} />
       </div>
     </div>
   );
