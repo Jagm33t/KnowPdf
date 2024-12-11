@@ -130,6 +130,7 @@ const ChatComponent = ({ chatId }: Props) => {
             onChange={handleInputChange}
             placeholder="Ask any question..."
             className="w-full"
+            maxLength={800}
           />
           <Button type="submit" className="bg-[#192c56] ml-2">
             <Send className="h-4 w-4" />

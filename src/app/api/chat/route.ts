@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       .map((message: Message) => {
           return message.role === "user"
             ? `User: ${message.content}\n`
-            : `Assistant: ${message.content}\n`;
+            : `System: ${message.content}\n`;
         })
         .join("")}
     

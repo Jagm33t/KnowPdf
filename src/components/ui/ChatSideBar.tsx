@@ -104,7 +104,7 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
                 <MessageCircle className="mr-1 w-3" />
                 <p
                   className="text-xs truncate overflow-hidden whitespace-nowrap"
-                  style={{ maxWidth: "160px" }}
+                  style={{ maxWidth: "150px" }}
                   title={chat.pdfName}
                 >
                   {chat.pdfName}
