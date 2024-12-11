@@ -28,7 +28,11 @@ const FileUpload = () => {
   });
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: { "application/pdf": [".pdf"] },
+    accept: { 
+      "application/pdf": [".pdf"], // PDF files
+      "text/plain": [".txt"],        // Text files
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"], // Word files
+    },
     maxFiles: 1,
     onDrop: async (acceptedFiles) => {
       const file = acceptedFiles[0];

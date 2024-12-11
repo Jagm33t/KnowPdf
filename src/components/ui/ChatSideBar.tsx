@@ -25,7 +25,7 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
 
   const handleDelete = async (chatId: number, fileKey: string) => {
     try {
-      setLoading(true);
+       
       console.log("Deleting chat with ID:", chatId, "File Key:", fileKey);
 
       // Step 1: Delete the messages associated with the chatId
@@ -63,7 +63,7 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
           <AvatarImage src="/chat-logo.png" className="object-cover" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <h1 className="text-xl text-black ml-1">Know Your PDF</h1>
+        <h1 className="text-xl text-black ml-1">Scruby</h1>
       </div>
 
       {/* Start New Chat Button */}
@@ -109,7 +109,10 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
                 >
                   {chat.pdfName}
                 </p>
-                <div className="relative">
+                
+              </div>
+            </Link>
+            <div className="relative">
                   <Button
                     variant="ghost"
                     className="p-1"
@@ -134,8 +137,6 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
                     </div>
                   )}
                 </div>
-              </div>
-            </Link>
           </div>
         ))}
       </div>

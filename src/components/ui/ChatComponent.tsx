@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "./input";
 import { useChat } from "ai/react";
 import { Button } from "./button";
@@ -9,14 +9,24 @@ import MessageList from "./MessageList";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Message } from "ai";
+import { toast } from "react-hot-toast";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Props {
   chatId: number;
 }
 
 const ChatComponent = ({ chatId }: Props) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [shareableLink, setShareableLink] = useState<string>("");
+
   // Fetching messages via useQuery
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch  } = useQuery({
     queryKey: ["chat", chatId],
     queryFn: async () => {
       const response = await axios.post<Message[]>("/api/get-messages", {
@@ -35,6 +45,11 @@ const ChatComponent = ({ chatId }: Props) => {
     initialMessages: data || [],
   });
 
+  // Generate shareable link on component mount
+  useEffect(() => {
+    setShareableLink(`${window.location.origin}/share-chat/${chatId}`);
+  }, [chatId]);
+
   // Scroll to bottom when new messages are added
   useEffect(() => {
     const messageContainer = document.getElementById("message-container");
@@ -46,48 +61,143 @@ const ChatComponent = ({ chatId }: Props) => {
     }
   }, [messages]);
 
+  // Handle download chat functionality
+  const handleDownloadChat = () => {
+    if (messages.length === 0) {
+      toast.error("No messages to download.");
+      return;
+    }
+
+    const chatContent = messages
+      .map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`)
+      .join("\n\n");
+
+    const blob = new Blob([chatContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = `chat-${chatId}.txt`;
+    link.click();
+
+    // Clean up the object URL
+    URL.revokeObjectURL(url);
+  };
+
+   // Handle Reset Chat
+   const handleResetChat = async () => {
+    const loadingToast = toast.loading("Resetting chat...");
+  
+    try {
+      const response = await axios.delete("/api/reset-chat", {
+        data: { chatId },
+      });
+  
+      if (response.data.success) {
+        toast.dismiss(loadingToast);
+        toast.success("Chat reset successfully!");
+        refetch(); // Refetch messages to ensure the UI is updated
+      } else {
+        toast.dismiss(loadingToast);
+        toast.error(response.data.message || "Failed to reset chat.");
+      }
+    } catch (error) {
+      console.error("Error resetting chat:", error);
+      toast.dismiss(loadingToast);
+      toast.error("An error occurred while resetting the chat.");
+    }
+  };
+  
+
+  
+  
+
+
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
       <div className="flex justify-between sticky top-0 inset-x-0 p-2 bg-white">
         <h3 className="text-xl">Chat</h3>
         <div className="flex gap-4">
-          {/* Share Icon with Hover Text */}
-          <div className="group relative flex items-center">
-            <button className="hover:text-[#33679c]" title="Share chat">
-              <Share className="w-5"/>
-            </button>
-          </div>
+          {/* Share Button */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <button className="hover:text-[#33679c]" title="Share chat">
+                <Share className="w-5" />
+              </button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogTitle>Share this chat</DialogTitle>
+              <p className="text-sm text-gray-500 mb-4">
+                Anyone with this link can chat with your document.
+              </p>
+              <div className="flex items-center gap-2 bg-gray-50">
+                <input
+                  type="text"
+                  value={shareableLink}
+                  readOnly
+                  className="flex-1 border px-2 py-1 rounded"
+                />
+              </div>
+              <div className="flex gap-2 mt-4">
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(shareableLink);
+                    toast.success("Link Copied");
+                  }}
+                  className="w-full hover:bg-gray-100 bg-white text-black border-black border"
+                >
+                  Copy Link
+                </Button>
+                <Button
+                  className="w-full hover:bg-gray-100 bg-white text-black border-black border"
+                  onClick={() =>
+                    window.open(
+                      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareableLink)}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  Share on Facebook
+                </Button>
+                <Button
+                  className="w-full hover:bg-gray-100 bg-white text-black border-black border"
+                  onClick={() =>
+                    window.open(
+                      `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareableLink)}`,
+                      "_blank"
+                    )
+                  }
+                >
+                  Share on X
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Download Icon with Hover Text */}
           <div className="group relative flex items-center">
-            <button className="hover:text-[#33679c]"  title="Download chat">
-              <Download className="w-5"/>
+            <button
+              className="hover:text-[#33679c]"
+              title="Download chat"
+              onClick={handleDownloadChat}
+            >
+              <Download className="w-5" />
             </button>
-         
           </div>
 
           {/* Refresh Icon with Hover Text */}
           <div className="group relative flex items-center">
-            <button className="hover:text-[#33679c]"  title="Reset chat">
-              <RefreshCw className="w-5"/>
+            <button className="hover:text-[#33679c]" title="Reset chat" onClick={handleResetChat}>
+              <RefreshCw className="w-5" />
             </button>
-            
           </div>
-          <div className="group relative flex items-center">
-            <button className="hover:text-[#33679c]"  title="Trash chat">
-              <Trash className="w-5" />
-            </button>
-            
-          </div>
+
         </div>
       </div>
 
       {/* Message List */}
-      <div
-        id="message-container"
-        className="flex-1 overflow-y-auto px-4 py-2"
-      >
+      <div id="message-container" className="flex-1 overflow-y-auto px-4 py-2">
         <MessageList messages={messages} isLoading={isLoading} />
       </div>
 
@@ -120,10 +230,7 @@ const ChatComponent = ({ chatId }: Props) => {
       </div>
 
       {/* Input Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="w-full bg-white px-5 py-4"
-      >
+      <form onSubmit={handleSubmit} className="w-full bg-white px-5 py-4">
         <div className="flex items-center">
           <Input
             value={input}

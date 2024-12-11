@@ -27,8 +27,6 @@ const ChatPage = async ({ params }: Props) => {
 
   // Fetch chats for the authenticated user
   const _chats = await db.select().from(chats).where(eq(chats.userId, userId));
-  // console.log("_chats:", _chats); // Log all chats for the user
-
   // Redirect if no chats are found
   if (!_chats) {
     return redirect("/");
@@ -43,23 +41,25 @@ const ChatPage = async ({ params }: Props) => {
     return redirect("/");
   }
 
-  // Log the pdfUrl for debugging
+  // Get the pdfUrl for the current chat
   const pdfUrl = currentChat?.pdfUrl || "";
 
 
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="flex w-full h-screen overflow-hidden">
-        {/* chat sidebar */}
+        {/* Chat Sidebar */}
         <div className="flex-[1] max-w-xs">
-        <ChatSideBar chats={_chats} chatId={parseInt(chatId)} isPro={isPro} />
+          <ChatSideBar chats={_chats} chatId={parseInt(chatId)} isPro={isPro} />
         </div>
-        {/* pdf viewer */}
-        <div className="max-h-screen p-4 oveflow-scroll flex-[3]">
+        
+        {/* PDF Viewer */}
+        <div className="max-h-screen p-4 overflow-scroll flex-[3]">
           <PDFViewer pdf_url={pdfUrl} />
         </div>
-        {/* chat component */}
-        <div className="flex-[3] border-l-2 border-l-gray bg-[#F3F2F1]">
+
+        {/* Chat Component */}
+        <div className="flex-[3] border-l-2 border-l-gray-300 bg-[#F3F2F1]">
           <ChatComponent chatId={parseInt(chatId)} />
         </div>
       </div>
