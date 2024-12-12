@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import NotesEditor from "./NotesEditor";
 
 interface Props {
   chatId: number;
@@ -24,9 +25,10 @@ interface Props {
 const ChatComponent = ({ chatId }: Props) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [shareableLink, setShareableLink] = useState<string>("");
+  const [activeView, setActiveView] = useState<"Analyze" | "Notes">("Analyze");
 
   // Fetching messages via useQuery
-  const { data, isLoading, refetch  } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["chat", chatId],
     queryFn: async () => {
       const response = await axios.post<Message[]>("/api/get-messages", {
@@ -36,7 +38,6 @@ const ChatComponent = ({ chatId }: Props) => {
     },
   });
 
-  // Chat hook initialization
   const { input, handleInputChange, handleSubmit, messages, setInput } = useChat({
     api: "/api/chat",
     body: {
@@ -45,12 +46,10 @@ const ChatComponent = ({ chatId }: Props) => {
     initialMessages: data || [],
   });
 
-  // Generate shareable link on component mount
   useEffect(() => {
     setShareableLink(`${window.location.origin}/share-chat/${chatId}`);
   }, [chatId]);
 
-  // Scroll to bottom when new messages are added
   useEffect(() => {
     const messageContainer = document.getElementById("message-container");
     if (messageContainer) {
@@ -61,7 +60,6 @@ const ChatComponent = ({ chatId }: Props) => {
     }
   }, [messages]);
 
-  // Handle download chat functionality
   const handleDownloadChat = () => {
     if (messages.length === 0) {
       toast.error("No messages to download.");
@@ -80,23 +78,21 @@ const ChatComponent = ({ chatId }: Props) => {
     link.download = `chat-${chatId}.txt`;
     link.click();
 
-    // Clean up the object URL
     URL.revokeObjectURL(url);
   };
 
-   // Handle Reset Chat
-   const handleResetChat = async () => {
+  const handleResetChat = async () => {
     const loadingToast = toast.loading("Resetting chat...");
-  
+
     try {
       const response = await axios.delete("/api/reset-chat", {
         data: { chatId },
       });
-  
+
       if (response.data.success) {
         toast.dismiss(loadingToast);
         toast.success("Chat reset successfully!");
-        refetch(); // Refetch messages to ensure the UI is updated
+        refetch();
       } else {
         toast.dismiss(loadingToast);
         toast.error(response.data.message || "Failed to reset chat.");
@@ -107,19 +103,34 @@ const ChatComponent = ({ chatId }: Props) => {
       toast.error("An error occurred while resetting the chat.");
     }
   };
-  
-
-  
-  
-
 
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
       <div className="flex justify-between sticky top-0 inset-x-0 p-2 bg-white">
-        <h3 className="text-xl">Chat</h3>
         <div className="flex gap-4">
-          {/* Share Button */}
+        <Button
+    className={`${
+      activeView === "Analyze"
+        ? "bg-[#33679c] text-white hover:bg-[#33679c]"
+        : "bg-white text-black hover:bg-gray-200"
+    }`}
+    onClick={() => setActiveView("Analyze")}
+  >
+    Analyze
+  </Button>
+  <Button
+    className={`${
+      activeView === "Notes"
+        ? "bg-[#33679c] text-white hover:bg-[#33679c]"
+        : "bg-white text-black hover:bg-gray-200"
+    }`}
+    onClick={() => setActiveView("Notes")}
+  >
+    Notes
+          </Button>
+        </div>
+        <div className="flex gap-4">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <button className="hover:text-[#33679c]" title="Share chat">
@@ -149,101 +160,54 @@ const ChatComponent = ({ chatId }: Props) => {
                 >
                   Copy Link
                 </Button>
-                <Button
-                  className="w-full hover:bg-gray-100 bg-white text-black border-black border"
-                  onClick={() =>
-                    window.open(
-                      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareableLink)}`,
-                      "_blank"
-                    )
-                  }
-                >
-                  Share on Facebook
-                </Button>
-                <Button
-                  className="w-full hover:bg-gray-100 bg-white text-black border-black border"
-                  onClick={() =>
-                    window.open(
-                      `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareableLink)}`,
-                      "_blank"
-                    )
-                  }
-                >
-                  Share on X
-                </Button>
               </div>
             </DialogContent>
           </Dialog>
-
-          {/* Download Icon with Hover Text */}
-          <div className="group relative flex items-center">
-            <button
-              className="hover:text-[#33679c]"
-              title="Download chat"
-              onClick={handleDownloadChat}
-            >
-              <Download className="w-5" />
-            </button>
-          </div>
-
-          {/* Refresh Icon with Hover Text */}
-          <div className="group relative flex items-center">
-            <button className="hover:text-[#33679c]" title="Reset chat" onClick={handleResetChat}>
-              <RefreshCw className="w-5" />
-            </button>
-          </div>
-
+          <button
+            className="hover:text-[#33679c]"
+            title="Download chat"
+            onClick={handleDownloadChat}
+          >
+            <Download className="w-5" />
+          </button>
+          <button
+            className="hover:text-[#33679c]"
+            title="Reset chat"
+            onClick={handleResetChat}
+          >
+            <RefreshCw className="w-5" />
+          </button>
         </div>
       </div>
 
-      {/* Message List */}
-      <div id="message-container" className="flex-1 overflow-y-auto px-4 py-2">
-        <MessageList messages={messages} isLoading={isLoading} />
-      </div>
-
-      {/* Buttons for Predefined Prompts */}
-      <div className="w-full bg-white px-5 py-3 flex gap-2">
-        <Button
-          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
-          onClick={() => setInput("Summarize the content.")}
-        >
-          Summarize
-        </Button>
-        <Button
-          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
-          onClick={() => setInput("Highlight important information in the content.")}
-        >
-          Highlight
-        </Button>
-        <Button
-          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
-          onClick={() => setInput("Simplify the content.")}
-        >
-          Simplify
-        </Button>
-        <Button
-          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
-          onClick={() => setInput("Enhance the content.")}
-        >
-          Enhance
-        </Button>
-      </div>
+      {/* Conditional Rendering Based on Active View */}
+      {activeView === "Analyze" ? (
+  <div id="message-container" className="flex-1 overflow-y-auto px-4 py-2">
+    <MessageList messages={messages} isLoading={isLoading} />
+  </div>
+) : (
+  <div className="flex-1 overflow-y-auto px-4 py-2">
+    <NotesEditor />
+  </div>
+)}
 
       {/* Input Form */}
-      <form onSubmit={handleSubmit} className="w-full bg-white px-5 py-4">
-        <div className="flex items-center">
-          <Input
-            value={input}
-            onChange={handleInputChange}
-            placeholder="Ask any question..."
-            className="w-full"
-            maxLength={800}
-          />
-          <Button type="submit" className="bg-[#192c56] ml-2">
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </form>
+      {activeView === "Analyze" && (
+        <form onSubmit={handleSubmit} className="w-full bg-white px-5 py-4">
+          <div className="flex items-center">
+            <Input
+              value={input}
+              onChange={handleInputChange}
+              placeholder="Ask any question..."
+              className="w-full"
+              maxLength={800}
+            />
+            <Button type="submit" className="bg-[#192c56] ml-2">
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </form>
+      )}
     </div>
   );
 };
