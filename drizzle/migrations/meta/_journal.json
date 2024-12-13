@@ -8,6 +8,13 @@
       "when": 1733394499428,
       "tag": "0000_giant_warbound",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1734047863570,
+      "tag": "0001_glossy_elektra",
+      "breakpoints": true
     }
   ]
 }

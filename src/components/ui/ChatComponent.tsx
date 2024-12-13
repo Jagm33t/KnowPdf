@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import React, { useEffect, useState } from "react";
 import { Input } from "./input";
@@ -109,25 +109,25 @@ const ChatComponent = ({ chatId }: Props) => {
       {/* Header */}
       <div className="flex justify-between sticky top-0 inset-x-0 p-2 bg-white">
         <div className="flex gap-4">
-        <Button
-    className={`${
-      activeView === "Analyze"
-        ? "bg-[#33679c] text-white hover:bg-[#33679c]"
-        : "bg-white text-black hover:bg-gray-200"
-    }`}
-    onClick={() => setActiveView("Analyze")}
-  >
-    Analyze
-  </Button>
-  <Button
-    className={`${
-      activeView === "Notes"
-        ? "bg-[#33679c] text-white hover:bg-[#33679c]"
-        : "bg-white text-black hover:bg-gray-200"
-    }`}
-    onClick={() => setActiveView("Notes")}
-  >
-    Notes
+          <Button
+            className={`${
+              activeView === "Analyze"
+                ? "bg-[#33679c] text-white hover:bg-[#33679c]"
+                : "bg-white text-black hover:bg-gray-200"
+            }`}
+            onClick={() => setActiveView("Analyze")}
+          >
+            Analyze
+          </Button>
+          <Button
+            className={`${
+              activeView === "Notes"
+                ? "bg-[#33679c] text-white hover:bg-[#33679c]"
+                : "bg-white text-black hover:bg-gray-200"
+            }`}
+            onClick={() => setActiveView("Notes")}
+          >
+            Notes
           </Button>
         </div>
         <div className="flex gap-4">
@@ -182,14 +182,15 @@ const ChatComponent = ({ chatId }: Props) => {
 
       {/* Conditional Rendering Based on Active View */}
       {activeView === "Analyze" ? (
-  <div id="message-container" className="flex-1 overflow-y-auto px-4 py-2">
-    <MessageList messages={messages} isLoading={isLoading} />
-  </div>
-) : (
-  <div className="flex-1 overflow-y-auto px-4 py-2">
-    <NotesEditor />
-  </div>
-)}
+        <div id="message-container" className="flex-1 overflow-y-auto px-4 py-2">
+          <MessageList messages={messages} isLoading={isLoading} />
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto px-4 py-2">
+          {/* Pass chatId to NotesEditor */}
+          <NotesEditor chatId={chatId} />
+        </div>
+      )}
 
       {/* Input Form */}
       {activeView === "Analyze" && (

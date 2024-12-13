@@ -8,8 +8,10 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+// Enum for user role types
 export const userSystemEnum = pgEnum("user_system_enum", ["system", "user"]);
 
+// Chats table
 export const chats = pgTable("chats", {
   id: serial("id").primaryKey(),
   pdfName: text("pdf_name").notNull(),
@@ -21,6 +23,7 @@ export const chats = pgTable("chats", {
 
 export type DrizzleChat = typeof chats.$inferSelect;
 
+// Messages table
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
   chatId: integer("chat_id")
@@ -31,6 +34,7 @@ export const messages = pgTable("messages", {
   role: userSystemEnum("role").notNull(),
 });
 
+// User Subscriptions table
 export const userSubscriptions = pgTable("user_subscriptions", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id", { length: 256 }).notNull().unique(),
@@ -43,3 +47,16 @@ export const userSubscriptions = pgTable("user_subscriptions", {
   stripePriceId: varchar("stripe_price_id", { length: 256 }),
   stripeCurrentPeriodEnd: timestamp("stripe_current_period_ended_at"),
 });
+
+// Notes table to store notes for each chat
+export const notes = pgTable("notes", {
+  id: serial("id").primaryKey(),
+  chatId: integer("chat_id")
+    .references(() => chats.id)
+    .notNull(),
+  content: text("content").notNull(), // Store the notes content
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type DrizzleNotes = typeof notes.$inferSelect;
