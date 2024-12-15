@@ -1,13 +1,12 @@
 // MenuBar.tsx
-import React, { useState } from "react";
+import React from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Bold, Italic, AlignLeft, AlignCenter, AlignRight, AlignJustify, Highlighter, ListCollapse, Heading1, Sparkles } from "lucide-react";
 import { DrizzleChat } from "@/lib/db/schema";
-// import { getEmbeddings } from "../../lib/embeddings";
-// import { searchPinecone } from "../../lib/pinecone"; 
+
 
 const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; onAiResponse: (response: string) => void;  }) => {
-  const [aiResponse, setAiResponse] = useState<string | null>(null);
+
 
   if (!editor) {
     return null;
@@ -18,6 +17,7 @@ const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; onAiRes
     console.log("AI Clicked");
     
     try {
+      
       // Step 1: Get selected text from the editor
       const selectedText = editor.state.doc.textBetween(
         editor.state.selection.from,
@@ -72,16 +72,14 @@ const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; onAiRes
   
       // Step 8: Append AI result to notes or UI
       if (result?.answer) {
-        const aiResponse = result.answer;
-        setAiResponse(aiResponse); // Store the AI response in local state
-        onAiResponse(aiResponse); // Pass the response to the parent component
-
-        editor.dispatch({
-          changes: {
-            from: editor.state.selection.to,
-            insert: `\n\nAI Response:\n${aiResponse}`,
-          },
-        });
+        // Ensure the editor is in a valid state before inserting content
+        
+        if (editor.commands) {
+          editor.commands.setTextSelection(editor.state.doc.content.size); 
+          editor.commands.insertContent(`${result.answer}`);
+        } else {
+          console.error("Editor commands are not available.");
+        }
       }
     } catch (error) {
       console.error("Error during AI processing:", error);
