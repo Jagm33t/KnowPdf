@@ -1,10 +1,11 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
+import { DrizzleChat } from "@/lib/db/schema";
 import { Input } from "./input";
 import { useChat } from "ai/react";
 import { Button } from "./button";
-import { Send, Share, Download, RefreshCw, Trash } from "lucide-react"; // ShadCN (Lucide) icons
+import { Send, Share, Download, RefreshCw } from "lucide-react"; // ShadCN (Lucide) icons
 import MessageList from "./MessageList";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -20,12 +21,20 @@ import NotesEditor from "./NotesEditor";
 
 interface Props {
   chatId: number;
+  chats: DrizzleChat[];
 }
 
-const ChatComponent = ({ chatId }: Props) => {
+const ChatComponent = ({ chatId, chats }: Props) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [shareableLink, setShareableLink] = useState<string>("");
   const [activeView, setActiveView] = useState<"Analyze" | "Notes">("Analyze");
+  const [loading, setLoading] = useState(false);
+
+  const handleSetLoading = (isLoading: boolean) => {
+    setLoading(isLoading);
+    console.log("loading ",loading)
+  };
+
 
   // Fetching messages via useQuery
   const { data, isLoading, refetch } = useQuery({
@@ -38,7 +47,7 @@ const ChatComponent = ({ chatId }: Props) => {
     },
   });
 
-  const { input, handleInputChange, handleSubmit, messages, setInput } = useChat({
+  const { input, handleInputChange, handleSubmit, messages } = useChat({
     api: "/api/chat",
     body: {
       chatId,
@@ -179,7 +188,15 @@ const ChatComponent = ({ chatId }: Props) => {
           </button>
         </div>
       </div>
-
+      {activeView === "Notes" && (
+        <div className="flex justify-end pr-4">
+          {loading ? (
+            <div className="text-xs text-gray-500 py-1 pr-4 ">Saving...</div>
+          ) : (
+            <div className="text-xs text-[#33679c] px-1 pr-4 ">Saved !</div>
+          )}
+        </div>
+      )}
       {/* Conditional Rendering Based on Active View */}
       {activeView === "Analyze" ? (
         <div id="message-container" className="flex-1 overflow-y-auto px-4 py-2">
@@ -188,7 +205,7 @@ const ChatComponent = ({ chatId }: Props) => {
       ) : (
         <div className="flex-1 overflow-y-auto px-4 py-2">
           {/* Pass chatId to NotesEditor */}
-          <NotesEditor chatId={chatId} />
+          <NotesEditor chats={chats} chatId={chatId} setLoadingState={handleSetLoading} />
         </div>
       )}
 

@@ -44,7 +44,7 @@ export async function GET() {
           price_data: {
             currency: "USD",
             product_data: {
-              name: "Know PDF Pro",
+              name: "Scruby AI",
               description: "Unlimited PDF sessions!",
             },
             unit_amount: 1100,
