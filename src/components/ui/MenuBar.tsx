@@ -5,13 +5,15 @@ import { Bold, Italic, AlignLeft, AlignCenter, AlignRight, AlignJustify, Highlig
 import { DrizzleChat } from "@/lib/db/schema";
 
 
-const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; onAiResponse: (response: string) => void;  }) => {
+const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; }) => {
 
 
   if (!editor) {
     return null;
   }
-
+  const cleanResponse = (response: string): string => {
+    return response.replace(/```.*?\n/g, '').replace(/```/g, '').trim();
+  };
 
   const onAiClick = async () => {
     console.log("AI Clicked");
@@ -71,12 +73,38 @@ const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; onAiRes
       console.log("Backend Result:", result);
   
       // Step 8: Append AI result to notes or UI
-      if (result?.answer) {
-        // Ensure the editor is in a valid state before inserting content
-        
-        if (editor.commands) {
-          editor.commands.setTextSelection(editor.state.doc.content.size); 
-          editor.commands.insertContent(`${result.answer}`);
+       if (result?.answer) {
+   // Step 8: Append AI result to notes or UI
+   if (result?.answer) {
+    editor.commands.setTextSelection(editor.state.doc.content.size);
+      
+    // Add a new line before appending the content
+    editor.commands.insertContent('\n');
+    
+    editor.commands.insertContent([
+      {
+        type: "text",
+        marks: [{ type: "bold" }],
+        text: "Answer: ",
+      },
+      {
+        type: "text",
+        text: cleanResponse(result.answer), // Insert the cleaned AI response
+      },
+    ]);
+
+    // Clean the AI response
+    const cleanedAnswer = cleanResponse(result.answer);
+
+    // Insert the cleaned AI response
+    editor.commands.insertContent(cleanedAnswer);
+
+    const lastNode = editor.view.dom.lastChild;
+    if (lastNode) {
+      lastNode.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+
+
         } else {
           console.error("Editor commands are not available.");
         }

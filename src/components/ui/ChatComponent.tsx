@@ -22,6 +22,7 @@ import NotesEditor from "./NotesEditor";
 interface Props {
   chatId: number;
   chats: DrizzleChat[];
+  appendedMessage?: string[];
 }
 
 const ChatComponent = ({ chatId, chats }: Props) => {
@@ -29,6 +30,8 @@ const ChatComponent = ({ chatId, chats }: Props) => {
   const [shareableLink, setShareableLink] = useState<string>("");
   const [activeView, setActiveView] = useState<"Analyze" | "Notes">("Analyze");
   const [loading, setLoading] = useState(false);
+  const [appendedMessage, setAppendedMessage] = useState<string[]>([]); 
+
 
   const handleSetLoading = (isLoading: boolean) => {
     setLoading(isLoading);
@@ -112,6 +115,14 @@ const ChatComponent = ({ chatId, chats }: Props) => {
       toast.error("An error occurred while resetting the chat.");
     }
   };
+
+  const handleMessageContentAdd = (messageContent: string) => {
+    console.log("Adding message content:", messageContent);
+  
+    // Append the new message content to the previous state (messages)
+    setAppendedMessage((prevMessages) => [...prevMessages, messageContent]);
+  };
+
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -200,12 +211,12 @@ const ChatComponent = ({ chatId, chats }: Props) => {
       {/* Conditional Rendering Based on Active View */}
       {activeView === "Analyze" ? (
         <div id="message-container" className="flex-1 overflow-y-auto px-4 py-2">
-          <MessageList messages={messages} isLoading={isLoading} />
+          <MessageList onMessageContentAdd={handleMessageContentAdd } messages={messages} isLoading={isLoading} />
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto px-4 py-2">
           {/* Pass chatId to NotesEditor */}
-          <NotesEditor chats={chats} chatId={chatId} setLoadingState={handleSetLoading} />
+          <NotesEditor appendedMessage={appendedMessage}  chats={chats} chatId={chatId} setLoadingState={handleSetLoading} />
         </div>
       )}
 

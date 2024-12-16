@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { Message, streamText } from "ai";
+import { streamText } from "ai";
 import {getContext} from "@/lib/context";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";

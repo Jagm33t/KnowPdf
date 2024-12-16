@@ -7,7 +7,7 @@ import axios from "axios";
 import MenuBar from "./MenuBar"; // Adjust the path if placed in a different folder
 import { DrizzleChat } from "@/lib/db/schema";
 
-const NotesEditor = ({ chatId, chats, setLoadingState }: { chats: DrizzleChat[]; chatId: number; setLoadingState: (loading: boolean) => void }) => {
+const NotesEditor = ({ chatId, chats, setLoadingState, appendedMessage }: { chats: DrizzleChat[]; chatId: number; setLoadingState: (loading: boolean) => void; appendedMessage?: string[];}) => {
   const [notes, setNotes] = useState<string>("");
   const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -55,6 +55,24 @@ const NotesEditor = ({ chatId, chats, setLoadingState }: { chats: DrizzleChat[];
     fetchExistingNote();
   }, [chatId, editor]);
 
+  useEffect(() => {
+    if (appendedMessage && editor) {
+      console.log("Received appendedMessage in NotesEditor:", appendedMessage);
+      appendedMessage.forEach((message) => {
+        appendContentInEditor(message);
+        console.log("Editor content after append:", editor.getHTML()); // Log after appending
+      });
+    }
+  }, [appendedMessage, editor]);
+  
+  
+  
+  const appendContentInEditor = (newContent: string) => {
+    if (editor) {
+      editor.chain().focus().insertContent(`<p>${newContent}</p>`).run(); // Inserts a new paragraph with the content
+    }
+  };
+
   const debounceAutoSave = () => {
     if (typingTimeout) {
       clearTimeout(typingTimeout);
@@ -85,8 +103,8 @@ const NotesEditor = ({ chatId, chats, setLoadingState }: { chats: DrizzleChat[];
   };
 
   return (
-   <div
-  className="w-full max-w-2xl bg-white border border-gray-300 rounded-lg shadow-lg p-6 paper-style h-full"
+<div
+  className="w-full max-w-2xl bg-white border border-gray-300 rounded-lg shadow-lg p-6 paper-style h-full overflow-hidden flex flex-col"
 >
   {error && <div className="text-red-600 mb-2">{error}</div>}
   {loading && <div className="mt-4 text-gray-500">Saving...</div>}
@@ -96,10 +114,13 @@ const NotesEditor = ({ chatId, chats, setLoadingState }: { chats: DrizzleChat[];
 
   {/* Editor Content */}
   <div
-    className="editor-content w-full rounded overflow-hidden "
-  >
+  className="editor-content w-full h-full rounded overflow-hidden relative"
+>
+  <div className="h-full overflow-y-auto">
     <EditorContent editor={editor} />
   </div>
+</div>
+
 </div>
 
   );

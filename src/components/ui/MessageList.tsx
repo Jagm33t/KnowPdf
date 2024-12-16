@@ -7,9 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 type Props = {
   isLoading: boolean;
   messages: Message[];
+  onMessageContentAdd: (content: string) => void; 
 };
 
-const MessageList = ({ messages, isLoading }: Props) => {
+const MessageList = ({ messages, isLoading, onMessageContentAdd }: Props) => {
   const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
@@ -28,6 +29,11 @@ const MessageList = ({ messages, isLoading }: Props) => {
         setSpeakingMessageId(null);
       };
     }
+  };
+  const handleAddMessageContent = (content: string) => {
+    // Simply send the content to the parent
+    onMessageContentAdd(content);
+    console.log("adde",content)
   };
 
   const copyToClipboard = (content: string, messageId: string) => {
@@ -83,6 +89,13 @@ const MessageList = ({ messages, isLoading }: Props) => {
                     <Volume2 className="w-4 h-4" />
                   )}
                 </button>
+                <button
+            onClick={() => handleAddMessageContent(message.content)}
+            className="mt-2 bg-blue-500 text-white p-2 rounded"
+            title="Append message content to parent"
+          >
+            + Append Message
+          </button>
               </div>
             )}
           </div>
