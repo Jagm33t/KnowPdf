@@ -1,16 +1,14 @@
-// MenuBar.tsx
 import React from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Bold, Italic, AlignLeft, AlignCenter, AlignRight, AlignJustify, Highlighter, ListCollapse, Heading1, Sparkles } from "lucide-react";
+import { Bold, Italic, AlignLeft, AlignCenter, AlignRight, AlignJustify, Highlighter, ListCollapse, Heading1, Sparkles, Download } from "lucide-react";
 import { DrizzleChat } from "@/lib/db/schema";
 
-
 const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; }) => {
-
 
   if (!editor) {
     return null;
   }
+
   const cleanResponse = (response: string): string => {
     return response.replace(/```.*?\n/g, '').replace(/```/g, '').trim();
   };
@@ -19,8 +17,7 @@ const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; }) => {
     console.log("AI Clicked");
     
     try {
-      
-      // Step 1: Get selected text from the editor
+      // Get selected text from the editor
       const selectedText = editor.state.doc.textBetween(
         editor.state.selection.from,
         editor.state.selection.to,
@@ -28,33 +25,33 @@ const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; }) => {
       );
       console.log("Selected Text:", selectedText);
   
-      // Step 2: Validate the selection
+      // Validate the selection
       if (!selectedText || selectedText.trim() === "") {
         console.error("No text selected!");
         return;
       }
   
-      // Step 3: Ensure chats array has data
+      // Ensure chats array has data
       if (!chats || chats.length === 0) {
         console.error("No chat context available!");
         return;
       }
   
-      // Step 4: Extract fileKey from chats
-      const fileKey = chats[0]?.fileKey; // Assuming you always take the first chat
+      // Extract fileKey from chats
+      const fileKey = chats[0]?.fileKey;
       if (!fileKey) {
         console.error("File key is missing!");
         return;
       }
   
-      // Step 5: Prepare data to send to the backend
+      // Prepare data to send to the backend
       const payload = {
         selectedText,
         fileKey
       };
       console.log("Payload to Backend:", payload);
   
-      // Step 6: Call backend API
+      // Call backend API
       const response = await fetch("/api/notes", {
         method: "POST",
         headers: {
@@ -63,7 +60,7 @@ const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; }) => {
         body: JSON.stringify(payload),
       });
   
-      // Step 7: Handle the backend response
+      // Handle backend response
       if (!response.ok) {
         console.error("Backend Error:", response.statusText);
         return;
@@ -72,48 +69,46 @@ const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; }) => {
       const result = await response.json();
       console.log("Backend Result:", result);
   
-      // Step 8: Append AI result to notes or UI
-       if (result?.answer) {
-   // Step 8: Append AI result to notes or UI
-   if (result?.answer) {
-    editor.commands.setTextSelection(editor.state.doc.content.size);
-      
-    // Add a new line before appending the content
-    editor.commands.insertContent('\n');
-    
-    editor.commands.insertContent([
-      {
-        type: "text",
-        marks: [{ type: "bold" }],
-        text: "Answer: ",
-      },
-      {
-        type: "text",
-        text: cleanResponse(result.answer), // Insert the cleaned AI response
-      },
-    ]);
+      // Append AI result to notes or UI
+      if (result?.answer) {
+        editor.commands.setTextSelection(editor.state.doc.content.size);
+        editor.commands.insertContent("\n");
+        editor.commands.insertContent([
+          {
+            type: "text",
+            marks: [{ type: "bold" }],
+            text: "Answer: ",
+          },
+          {
+            type: "text",
+            text: cleanResponse(result.answer),
+          },
+        ]);
 
-    // Clean the AI response
-    const cleanedAnswer = cleanResponse(result.answer);
+        const cleanedAnswer = cleanResponse(result.answer);
+        editor.commands.insertContent(cleanedAnswer);
 
-    // Insert the cleaned AI response
-    editor.commands.insertContent(cleanedAnswer);
-
-    const lastNode = editor.view.dom.lastChild;
-    if (lastNode) {
-      lastNode.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
-
-
-        } else {
-          console.error("Editor commands are not available.");
+        const lastNode = editor.view.dom.lastChild;
+        if (lastNode) {
+          lastNode.scrollIntoView({ behavior: "smooth", block: "end" });
         }
       }
     } catch (error) {
       console.error("Error during AI processing:", error);
     }
   };
-  
+
+  // Function to download the content as a .txt file
+  const downloadNote = () => {
+    const noteContent = editor.getHTML();  // Get the content in HTML format
+    const contentToDownload = editor.getText();  // Get the content in plain text
+
+    const blob = new Blob([contentToDownload], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "note.txt"; // The file name for the download
+    link.click(); // Trigger the download
+  };
 
   return (
     <div className="control-group flex flex-wrap gap-2 mb-4">
@@ -149,27 +144,29 @@ const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; }) => {
       </DropdownMenu>
 
       <button
-            onClick={() => editor.chain().focus().toggleBold().run()}
-           className={`btn ${editor.isActive("bold") ? "bg-gray-200" : "bg-white"}`}
-           >
-            <Bold  className="hover:text-[#33679c]"/>
-          </button>
-       <button
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`btn ${editor.isActive("italic") ? "bg-gray-200" : "bg-white"}`}
-         >
-           <Italic className="hover:text-[#33679c]"/>
-         </button>
-        <button onClick={() => editor.chain().focus().toggleHighlight().run()} className={editor.isActive('highlight') ? 'is-active' : ''}>
-         <Highlighter className="hover:text-[#33679c]"/>
-        </button>
-        <button
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={editor.isActive('bulletList') ? 'is-active' : ''}
-          >
-           <ListCollapse className="hover:text-[#33679c]"/>
-          
-           </button>
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        className={`btn ${editor.isActive("bold") ? "bg-gray-200" : "bg-white"}`}
+      >
+        <Bold className="hover:text-[#33679c]"/>
+      </button>
+
+      <button
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        className={`btn ${editor.isActive("italic") ? "bg-gray-200" : "bg-white"}`}
+      >
+        <Italic className="hover:text-[#33679c]"/>
+      </button>
+
+      <button onClick={() => editor.chain().focus().toggleHighlight().run()} className={editor.isActive('highlight') ? 'is-active' : ''}>
+        <Highlighter className="hover:text-[#33679c]"/>
+      </button>
+
+      <button
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        className={editor.isActive('bulletList') ? 'is-active' : ''}
+      >
+        <ListCollapse className="hover:text-[#33679c]"/>
+      </button>
 
       <DropdownMenu>
         <DropdownMenuTrigger className="btn"><AlignLeft/></DropdownMenuTrigger>
@@ -189,13 +186,20 @@ const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; }) => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-     
-        <button
-            onClick={() => onAiClick()}
-            className={'hover:text-[#33679c]'}
-          >
-           <Sparkles/>
-          </button>
+      <button
+        onClick={() => onAiClick()}
+        className={'hover:text-[#33679c]'}
+      >
+        <Sparkles/>
+      </button>
+
+      {/* Download Button */}
+      <button
+        onClick={downloadNote}
+        className={'hover:text-[#33679c]'}
+      >
+        <Download className="hover:text-[#33679c]"/>
+      </button>
     </div>
   );
 };

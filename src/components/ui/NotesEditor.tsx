@@ -35,26 +35,37 @@ const NotesEditor = ({ chatId, chats, setLoadingState, appendedMessage }: { chat
 
   useEffect(() => {
     const fetchExistingNote = async () => {
-      setLoadingState(true); 
+      if (!chatId) {
+        // If chatId is invalid, skip the API call and set an appropriate message.
+        setNotes("Please add your first note.");
+        return;
+      }
+  
+      setLoadingState(true);
       setError(null);
+  
       try {
         const response = await axios.get(`/api/get-notes?chatId=${chatId}`);
         if (response.data) {
           const content = response.data.content;
           setNotes(content);
-          editor?.commands.setContent(content);
+          editor?.commands.setContent(content); // Set content in the editor
+        } else {
+          // If no content found for the chatId, you could set a placeholder note
+          setNotes("Please add your first note.");
         }
       } catch (err) {
-        console.error("Error fetching notes:", err);
+        console.error("Error:", err);
         setError("Failed to fetch notes.");
       } finally {
         setLoadingState(false);
       }
     };
-
+  
     fetchExistingNote();
-  }, [chatId, editor]);
-
+  }, [chatId, editor]); // Dependency on chatId and editor
+  
+  
   useEffect(() => {
     if (appendedMessage && editor) {
       console.log("Received appendedMessage in NotesEditor:", appendedMessage);
