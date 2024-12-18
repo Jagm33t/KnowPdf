@@ -50,7 +50,7 @@ const ChatComponent = ({ chatId, chats }: Props) => {
     },
   });
 
-  const { input, handleInputChange, handleSubmit, messages } = useChat({
+  const { input, handleInputChange, handleSubmit, messages, setInput } = useChat({
     api: "/api/chat",
     body: {
       chatId,
@@ -220,23 +220,48 @@ const ChatComponent = ({ chatId, chats }: Props) => {
         </div>
       )}
 
-      {/* Input Form */}
-      {activeView === "Analyze" && (
-        <form onSubmit={handleSubmit} className="w-full bg-white px-5 py-4">
-          <div className="flex items-center">
-            <Input
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Ask any question..."
-              className="w-full"
-              maxLength={800}
-            />
-            <Button type="submit" className="bg-[#192c56] ml-2">
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
-        </form>
+{activeView === "Analyze" && (
+        <div>
+          {/* Predefined Buttons */}
+          <div className="w-full bg-white px-5 py-3 flex gap-2">
+        <Button
+          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+          onClick={() => setInput("Summarize the content.")}
+        >
+          Summarize
+        </Button>
+        <Button
+          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+          onClick={() => setInput("Highlight important information in the content.")}
+        >
+          Highlight
+        </Button>
+        <Button
+          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+          onClick={() => setInput("Simplify the content.")}
+        >
+          Simplify
+        </Button>
+        <Button
+          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+          onClick={() => setInput("Enhance the content.")}
+        >
+          Enhance
+        </Button>
+      </div>
+
+          {/* Input Form */}
+          <form onSubmit={handleSubmit} className="w-full bg-white px-5 py-4">
+            <div className="flex items-center">
+              <Input value={input} onChange={handleInputChange} placeholder="Ask any question..." className="w-full" maxLength={800} />
+              <Button type="submit" className="bg-[#192c56] ml-2">
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          </form>
+        </div>
       )}
+
     </div>
   );
 };

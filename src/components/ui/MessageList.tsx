@@ -89,13 +89,6 @@ const MessageList = ({ messages, isLoading, onMessageContentAdd }: Props) => {
                     <Volume2 className="w-4 h-4" />
                   )}
                 </button>
-                <button
-            onClick={() => handleAddMessageContent(message.content)}
-            className="mt-2 bg-blue-500 text-white p-2 rounded"
-            title="Append message content to parent"
-          >
-            + Append Message
-          </button>
               </div>
             )}
           </div>
