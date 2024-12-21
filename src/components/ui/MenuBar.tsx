@@ -1,7 +1,7 @@
-import React, { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Bold, Italic, AlignLeft, AlignCenter, AlignRight, AlignJustify, Highlighter, ListCollapse, Heading1, Sparkles, Download, Save } from "lucide-react";
 import { DrizzleChat } from "@/lib/db/schema";
+import { Editor } from '@tiptap/core';
 
 const MenuBar = ({
   editor,
@@ -9,7 +9,7 @@ const MenuBar = ({
   saveNote,
   setLoadingState,
 }: {
-  editor: any;
+  editor: Editor;
   chats: DrizzleChat[];
   saveNote: () => void;
   setLoadingState: (loading: boolean) => void;

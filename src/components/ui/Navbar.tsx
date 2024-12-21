@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { auth } from '@clerk/nextjs/server';
-import { ArrowRight, LogIn } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import MaxWidthWrapper from '@/components/ui/MaxWidthWrapper';
 import SubscriptionButton from '@/components/ui/SubscriptionButton';
 import { checkSubscription } from '@/lib/subscription';

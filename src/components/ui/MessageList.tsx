@@ -10,7 +10,7 @@ type Props = {
   onMessageContentAdd: (content: string) => void; 
 };
 
-const MessageList = ({ messages, isLoading, onMessageContentAdd }: Props) => {
+const MessageList = ({ messages, isLoading}: Props) => {
   const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 

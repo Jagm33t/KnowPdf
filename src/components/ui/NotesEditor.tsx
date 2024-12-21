@@ -18,7 +18,7 @@ const NotesEditor = ({
 }) => {
   const [notes, setNotes] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false); // Centralized loading state
-  const [_error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const editor = useEditor({
     extensions: [
@@ -59,7 +59,8 @@ const NotesEditor = ({
           setNotes("Please add your first note.");
         }
       } catch (err) {
-        console.error("Error:", err);
+        console.log("Error:", err);
+        console.log(error)
       } finally {
         setLoading(false);
       }
