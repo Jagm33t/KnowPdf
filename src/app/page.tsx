@@ -93,7 +93,7 @@ export default async function Home() {
   {/* New Section 2 */}
   <div className="my-20">
     <h2 className="text-4xl font-bold text-center mb-8">
-      Why Choose Scruby AI's?
+      Why Choose Scruby AI?
     </h2>
     <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
       <div className="flex-1 border rounded-lg p-6 shadow-md">
