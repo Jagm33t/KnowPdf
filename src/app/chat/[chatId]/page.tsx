@@ -16,8 +16,8 @@ interface Props {
 }
 
 const ChatPage = async ({ params }: Props) => {
-
-  const { chatId } = await params; 
+  const { chatId } = params; // No need for 'await' here
+  
   // Authenticate user
   const { userId } = await auth();
   if (!userId) {
@@ -26,6 +26,7 @@ const ChatPage = async ({ params }: Props) => {
 
   // Fetch chats for the authenticated user
   const _chats = await db.select().from(chats).where(eq(chats.userId, userId));
+  
   // Redirect if no chats are found
   if (!_chats) {
     return redirect("/");
@@ -42,7 +43,6 @@ const ChatPage = async ({ params }: Props) => {
 
   // Get the pdfUrl for the current chat
   const pdfUrl = currentChat?.pdfUrl || "";
-
 
   return (
     <div className="flex h-screen overflow-hidden">
