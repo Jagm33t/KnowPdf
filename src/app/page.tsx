@@ -160,7 +160,7 @@ export default async function Home() {
       </div>
     </div>
     <div className="text-center mt-4 text-sm">
-    <span>&copy; {new Date().getFullYear()} Scruby AI. All Rights Reserved.&rsquo;</span>
+    <span>&copy; {new Date().getFullYear()} Scruby AI. All Rights Reserved.</span>
     </div>
   </div>
 
