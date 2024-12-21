@@ -1,4 +1,4 @@
-import ChatSideBar from "@/components/ui/ChatSideBar";
+import AppSidebar from "@/components/ui/AppSidebar";
 import ChatComponent from "@/components/ui/ChatComponent";
 import PDFViewer from "@/components/ui/PDFViewer";
 import { db } from "@/lib/db";
@@ -8,7 +8,6 @@ import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import React from "react";
-
 
 interface Props {
   params: {
@@ -50,7 +49,7 @@ const ChatPage = async ({ params }: Props) => {
       <div className="flex w-full h-screen overflow-hidden">
         {/* Chat Sidebar */}
         <div className="flex-[1] max-w-xs">
-          <ChatSideBar chats={_chats} chatId={parseInt(chatId)} isPro={isPro} />
+          <AppSidebar chats={_chats} chatId={parseInt(chatId)} isPro={isPro} />
         </div>
         
         {/* PDF Viewer */}

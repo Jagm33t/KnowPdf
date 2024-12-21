@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 import SubscriptionButton from "./SubscriptionButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import FileUpload from "./FileUpload"; // Import FileUpload here
+import FileUpload from "./FileUpload"; 
 
 type Props = {
   chats: DrizzleChat[];
@@ -19,7 +19,7 @@ type Props = {
   className?: string;
 };
 
-const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
+const AppSidebar = ({ chats, chatId, isPro }: Props) => {
   const [loading, setLoading] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState<number | null>(null);
 
@@ -58,19 +58,23 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
   return (
     <div className="flex flex-col h-screen p-4 text-[#545454] bg-[#f8fafc]">
       {/* Avatar section */}
-      <div className="flex  items-center mb-4">
-        <Avatar className="w-8 h-8 mt-1">
-          <AvatarImage src="/chat-logo.png" className="object-cover" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-        <h1 className="text-xl text-black ml-1">Scruby</h1>
-      </div>
+      <div className="flex items-center mb-4">
+  <Link href="/">
+    <div className="flex items-center cursor-pointer">
+      <Avatar className="w-8 h-8 mt-1">
+        <AvatarImage src="/chat-logo.png" className="object-cover" />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+      <h1 className="text-xl text-black ml-1">Scruby</h1>
+    </div>
+  </Link>
+</div>
 
       {/* Start New Chat Button */}
       <div className="w-full mb-4">
         <Dialog>
           <DialogTrigger asChild>
-          <Button className="w-full text-white bg-[#192c56] hover:bg-[#33679c] hover:text-white border-gray-200 border">
+          <Button className="w-full text-white bg-[#33679c] hover:bg-[#192c56] hover:text-white border-gray-200 border">
             <Plus className="mr-2 w-4 h-4" /> 
            Start  New Chat
           </Button>
@@ -161,4 +165,4 @@ const ChatSideBar = ({ chats, chatId, isPro }: Props) => {
   );
 };
 
-export default ChatSideBar;
+export default AppSidebar;

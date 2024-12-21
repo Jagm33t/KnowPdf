@@ -30,11 +30,11 @@ const MessageList = ({ messages, isLoading, onMessageContentAdd }: Props) => {
       };
     }
   };
-  const handleAddMessageContent = (content: string) => {
-    // Simply send the content to the parent
-    onMessageContentAdd(content);
-    console.log("adde",content)
-  };
+  // const handleAddMessageContent = (content: string) => {
+  //   // Simply send the content to the parent
+  //   onMessageContentAdd(content);
+  //   console.log("adde",content)
+  // };
 
   const copyToClipboard = (content: string, messageId: string) => {
     navigator.clipboard.writeText(content).then(() => {

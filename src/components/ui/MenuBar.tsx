@@ -1,106 +1,71 @@
-import React from "react";
+import React, { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Bold, Italic, AlignLeft, AlignCenter, AlignRight, AlignJustify, Highlighter, ListCollapse, Heading1, Sparkles, Download } from "lucide-react";
+import { Bold, Italic, AlignLeft, AlignCenter, AlignRight, AlignJustify, Highlighter, ListCollapse, Heading1, Sparkles, Download, Save } from "lucide-react";
 import { DrizzleChat } from "@/lib/db/schema";
 
-const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; }) => {
-
+const MenuBar = ({
+  editor,
+  chats,
+  saveNote,
+  setLoadingState,
+}: {
+  editor: any;
+  chats: DrizzleChat[];
+  saveNote: () => void;
+  setLoadingState: (loading: boolean) => void;
+}) => {
   if (!editor) {
     return null;
+  
   }
 
   const cleanResponse = (response: string): string => {
     return response.replace(/```.*?\n/g, '').replace(/```/g, '').trim();
   };
+ 
 
   const onAiClick = async () => {
-    console.log("AI Clicked");
-    
+    setLoadingState(true); // Show loading indicator
+
     try {
-      // Get selected text from the editor
-      const selectedText = editor.state.doc.textBetween(
-        editor.state.selection.from,
-        editor.state.selection.to,
-        ''
-      );
-      console.log("Selected Text:", selectedText);
-  
-      // Validate the selection
+      const selectedText = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to, "");
       if (!selectedText || selectedText.trim() === "") {
         console.error("No text selected!");
         return;
       }
-  
-      // Ensure chats array has data
-      if (!chats || chats.length === 0) {
-        console.error("No chat context available!");
-        return;
-      }
-  
-      // Extract fileKey from chats
+
       const fileKey = chats[0]?.fileKey;
       if (!fileKey) {
         console.error("File key is missing!");
         return;
       }
-  
-      // Prepare data to send to the backend
-      const payload = {
-        selectedText,
-        fileKey
-      };
-      console.log("Payload to Backend:", payload);
-  
-      // Call backend API
+
+      const payload = { selectedText, fileKey };
       const response = await fetch("/api/notes", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-  
-      // Handle backend response
+
       if (!response.ok) {
         console.error("Backend Error:", response.statusText);
         return;
       }
-  
+
       const result = await response.json();
-      console.log("Backend Result:", result);
-  
-      // Append AI result to notes or UI
       if (result?.answer) {
-        editor.commands.setTextSelection(editor.state.doc.content.size);
-        editor.commands.insertContent("\n");
-        editor.commands.insertContent([
-          {
-            type: "text",
-            marks: [{ type: "bold" }],
-            text: "Answer: ",
-          },
-          {
-            type: "text",
-            text: cleanResponse(result.answer),
-          },
-        ]);
-
-        const cleanedAnswer = cleanResponse(result.answer);
-        editor.commands.insertContent(cleanedAnswer);
-
-        const lastNode = editor.view.dom.lastChild;
-        if (lastNode) {
-          lastNode.scrollIntoView({ behavior: "smooth", block: "end" });
-        }
+        editor.commands.insertContent(cleanResponse(result.answer));
       }
     } catch (error) {
       console.error("Error during AI processing:", error);
+    } finally {
+      setLoadingState(false); // Hide loading indicator
     }
   };
+  
 
   // Function to download the content as a .txt file
   const downloadNote = () => {
-    const noteContent = editor.getHTML();  // Get the content in HTML format
     const contentToDownload = editor.getText();  // Get the content in plain text
 
     const blob = new Blob([contentToDownload], { type: "text/plain" });
@@ -199,6 +164,14 @@ const MenuBar = ({ editor, chats }: { editor: any; chats: DrizzleChat[]; }) => {
         className={'hover:text-[#33679c]'}
       >
         <Download className="hover:text-[#33679c]"/>
+      </button>
+
+      <button
+        onClick={() => saveNote()}
+        className="ml-4 hover:text-[#33679c] bg-white text-black px-1 py-1 rounded"
+      >
+        <Save className="inline mr-2" />
+        Save Note
       </button>
     </div>
   );

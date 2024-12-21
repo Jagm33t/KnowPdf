@@ -4,14 +4,21 @@ import StarterKit from "@tiptap/starter-kit";
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
 import axios from "axios";
-import MenuBar from "./MenuBar"; // Adjust the path if placed in a different folder
+import MenuBar from "./MenuBar";
 import { DrizzleChat } from "@/lib/db/schema";
 
-const NotesEditor = ({ chatId, chats, setLoadingState, appendedMessage }: { chats: DrizzleChat[]; chatId: number; setLoadingState: (loading: boolean) => void; appendedMessage?: string[];}) => {
+const NotesEditor = ({
+  chatId,
+  chats,
+  appendedMessage,
+}: {
+  chats: DrizzleChat[];
+  chatId: number;
+  appendedMessage?: string[];
+}) => {
   const [notes, setNotes] = useState<string>("");
-  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false); // Centralized loading state
+  const [_error, setError] = useState<string | null>(null);
 
   const editor = useEditor({
     extensions: [
@@ -23,83 +30,61 @@ const NotesEditor = ({ chatId, chats, setLoadingState, appendedMessage }: { chat
     ],
     editorProps: {
       attributes: {
-        class: "focus:outline-none h-screen p-5", // Your custom class for the editor
+        class: "focus:outline-none h-screen p-5",
       },
     },
     content: notes,
     onUpdate({ editor }) {
       setNotes(editor.getHTML());
-      debounceAutoSave();
     },
   });
 
   useEffect(() => {
     const fetchExistingNote = async () => {
       if (!chatId) {
-        // If chatId is invalid, skip the API call and set an appropriate message.
         setNotes("Please add your first note.");
         return;
       }
-  
-      setLoadingState(true);
+
+      setLoading(true);
       setError(null);
-  
+
       try {
         const response = await axios.get(`/api/get-notes?chatId=${chatId}`);
         if (response.data) {
           const content = response.data.content;
           setNotes(content);
-          editor?.commands.setContent(content); // Set content in the editor
+          editor?.commands.setContent(content);
         } else {
-          // If no content found for the chatId, you could set a placeholder note
           setNotes("Please add your first note.");
         }
       } catch (err) {
         console.error("Error:", err);
-        setError("Failed to fetch notes.");
       } finally {
-        setLoadingState(false);
+        setLoading(false);
       }
     };
-  
+
     fetchExistingNote();
-  }, [chatId, editor]); // Dependency on chatId and editor
-  
-  
+  }, [chatId, editor]);
+
   useEffect(() => {
     if (appendedMessage && editor) {
-      console.log("Received appendedMessage in NotesEditor:", appendedMessage);
       appendedMessage.forEach((message) => {
         appendContentInEditor(message);
-        console.log("Editor content after append:", editor.getHTML()); // Log after appending
       });
     }
   }, [appendedMessage, editor]);
-  
-  
-  
+
   const appendContentInEditor = (newContent: string) => {
     if (editor) {
-      editor.chain().focus().insertContent(`<p>${newContent}</p>`).run(); // Inserts a new paragraph with the content
+      editor.chain().focus().insertContent(`<p>${newContent}</p>`).run();
     }
   };
 
-  const debounceAutoSave = () => {
-    if (typingTimeout) {
-      clearTimeout(typingTimeout);
-    }
-
-    const newTimeout = setTimeout(() => {
-      console.log("Auto-saving...");
-      autoSaveNote();
-    }, 500);
-
-    setTypingTimeout(newTimeout);
-  };
-
-  const autoSaveNote = async () => {
+  const saveNote = async () => {
     if (!notes) return;
-    setLoadingState(true);
+    setLoading(true);
     try {
       await axios.post("/api/save-notes", {
         chatId,
@@ -109,31 +94,30 @@ const NotesEditor = ({ chatId, chats, setLoadingState, appendedMessage }: { chat
       console.error("Error saving note:", err);
       setError("Failed to save note.");
     } finally {
-      setLoadingState(false);
+      setLoading(false);
     }
   };
 
   return (
-<div
-  className="w-full max-w-2xl bg-white border border-gray-300 rounded-lg shadow-lg p-6 paper-style h-full overflow-hidden flex flex-col"
->
-  {error && <div className="text-red-600 mb-2">{error}</div>}
-  {loading && <div className="mt-4 text-gray-500">Saving...</div>}
+    <div className="w-full max-w-2xl bg-white border border-gray-300 rounded-lg shadow-lg p-6 paper-style h-full overflow-hidden flex flex-col relative">
+      {/* Loading Indicator */}
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-75 z-50">
+          <div className="loading-spinner w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <span className="ml-4 text-gray-700 font-medium">Processing...</span>
+        </div>
+      )}
 
-  {/* Toolbar */}
-  <MenuBar chats={chats} editor={editor} />
+      {/* Toolbar */}
+      <MenuBar chats={chats} editor={editor} saveNote={saveNote} setLoadingState={setLoading} />
 
-  {/* Editor Content */}
-  <div
-  className="editor-content w-full h-full rounded overflow-hidden relative"
->
-  <div className="h-full overflow-y-auto">
-    <EditorContent editor={editor} />
-  </div>
-</div>
-
-</div>
-
+      {/* Editor Content */}
+      <div className="editor-content w-full h-full rounded overflow-hidden relative">
+        <div className="h-full overflow-y-auto">
+          <EditorContent editor={editor} />
+        </div>
+      </div>
+    </div>
   );
 };
 
