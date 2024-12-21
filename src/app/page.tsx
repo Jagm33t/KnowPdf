@@ -76,7 +76,7 @@ export default async function Home() {
     <div className="lg:w-1/2 text-left px-6">
       <h2 className="text-4xl font-bold mb-4">Read Papers And Take Notes At The Speed of AI</h2>
       <p className="text-lg text-zinc-700">
-        Unleash the power of artificial intelligence to revolutionize the way you read and understand complex documents. Summarize any PDF or document instantly with AI. Whether you're a student, researcher, or professional, save countless hours and gain deeper insights in record time. Join millions of users worldwide who are transforming their workflows and simplifying research tasks like never before.
+        Unleash the power of artificial intelligence to revolutionize the way you read and understand complex documents. Summarize any PDF or document instantly with AI. Whether  a student, researcher, or professional, save countless hours and gain deeper insights in record time. Join millions of users worldwide who are transforming their workflows and simplifying research tasks like never before.
       </p>
     </div>
     <div className="lg:w-1/2 px-6">
@@ -160,7 +160,7 @@ export default async function Home() {
       </div>
     </div>
     <div className="text-center mt-4 text-sm">
-    <span>&copy; {new Date().getFullYear()} Scruby AI. All Rights Reserved.</span>
+    <span>&copy; {new Date().getFullYear()} Scruby AI. All Rights Reserved.&rsquo;</span>
     </div>
   </div>
 
