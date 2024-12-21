@@ -75,21 +75,28 @@ export const truncateStringByBytes = (str: string, bytes: number) => {
 };
 
 async function prepareDocument(page: PDFPage) {
-  let { pageContent, metadata } = page;
+  // eslint-disable-next-line prefer-const
+  let { pageContent, metadata } = page; // You can use `let` here if you're mutating metadata properties
+
   pageContent = pageContent.replace(/\n/g, "");
-  // split the docs
+
+  // Destructure metadata
+  const { loc } = metadata;
+
+  // Split the docs
   const splitter = new RecursiveCharacterTextSplitter();
   const docs = await splitter.splitDocuments([
     new Document({
       pageContent,
       metadata: {
-        pageNumber: metadata.loc.pageNumber,
+        pageNumber: loc.pageNumber,
         text: truncateStringByBytes(pageContent, 36000),
       },
     }),
   ]);
   return docs;
 }
+
 
 
 
