@@ -37,7 +37,7 @@ export default async function Home() {
     </div>
     <UserButton afterSignOutUrl="/" />
     <h1 className="max-w-4xl text-3xl font-bold md:text-2xl lg:text-3xl">
-    Instantly dive into your research and get insights from your documents with <span className="text-[#33679c]">AI-powered chat</span>, all in seconds.
+    Instantly explore and gain insights from your documents with <span className="text-[#33679c]">AI-powered chat</span>, all in seconds.
 
     </h1>
     <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg">

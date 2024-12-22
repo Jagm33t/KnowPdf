@@ -20,7 +20,7 @@ import {
 import NotesEditor from "./NotesEditor";
 
 interface Props {
-  chatId: number;
+  chatId: string;
   chats: DrizzleChat[];
   appendedMessage?: string[];
 }

@@ -10,11 +10,11 @@ import { toast } from "react-hot-toast";
 import SubscriptionButton from "./SubscriptionButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import FileUpload from "./FileUpload"; 
+import FileUpload from "./FileUpload"; // Import FileUpload here
 
 type Props = {
   chats: DrizzleChat[];
-  chatId: number;
+  chatId: string;
   isPro: boolean;
   className?: string;
 };
@@ -23,7 +23,7 @@ const AppSidebar = ({ chats, chatId, isPro }: Props) => {
   const [loading, setLoading] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState<number | null>(null);
 
-  const handleDelete = async (chatId: number, fileKey: string) => {
+  const handleDelete = async (chatId: string, fileKey: string) => {
     try {
        
       console.log("Deleting chat with ID:", chatId, "File Key:", fileKey);
