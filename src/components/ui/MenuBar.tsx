@@ -9,7 +9,7 @@ const MenuBar = ({
   saveNote,
   setLoadingState,
 }: {
-  editor: Editor;
+  editor: Editor | null;
   chats: DrizzleChat[];
   saveNote: () => void;
   setLoadingState: (loading: boolean) => void;

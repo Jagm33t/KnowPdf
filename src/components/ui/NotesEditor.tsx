@@ -11,13 +11,15 @@ const NotesEditor = ({
   chatId,
   chats,
   appendedMessage,
+  setLoadingState,
 }: {
   chats: DrizzleChat[];
-  chatId: number;
+  chatId: string;
   appendedMessage?: string[];
+  setLoadingState: (isLoading: boolean) => void;
 }) => {
   const [notes, setNotes] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false); // Centralized loading state
+  const [loading, setLoading] = useState<boolean>(false); 
   const [error, setError] = useState<string | null>(null);
 
   const editor = useEditor({
@@ -40,13 +42,19 @@ const NotesEditor = ({
   });
 
   useEffect(() => {
+    setLoadingState(true); // Example usage
+    setTimeout(() => setLoadingState(false), 2000); // Simulated loading
+  }, [setLoadingState]);
+
+  useEffect(() => {
     const fetchExistingNote = async () => {
       if (!chatId) {
         setNotes("Please add your first note.");
         return;
       }
-
+     
       setLoading(true);
+      setLoadingState(true); // Update parent loading state
       setError(null);
 
       try {

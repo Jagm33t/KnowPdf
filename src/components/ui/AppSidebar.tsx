@@ -101,8 +101,8 @@ const AppSidebar = ({ chats, chatId, isPro }: Props) => {
             <Link href={`/chat/${chat.id}`}>
               <div
                 className={cn("flex items-center rounded-md", {
-                  "bg-[#e9ecef] text-slate-700 font-bold": chat.id === chatId,
-                  "hover:text-[#080808]": chat.id !== chatId,
+                  "bg-[#e9ecef] text-slate-700 font-bold": chat.id === parseInt(chatId),
+                  "hover:text-[#080808]": chat.id !== parseInt(chatId),
                 })}
               >
                 <MessageCircle className="mr-1 w-3" />
@@ -132,7 +132,7 @@ const AppSidebar = ({ chats, chatId, isPro }: Props) => {
                         className="p-2 text-red-500 cursor-pointer hover:bg-gray-300 flex items-center"
                         onClick={() => {
                           setOpenMenu(null);
-                          handleDelete(chat.id, chat.fileKey);
+                          handleDelete(chat.id.toString(), chat.fileKey);
                         }}
                       >
                         <Trash2 className="w-4 h-4 mr-2" />

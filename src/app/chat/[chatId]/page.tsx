@@ -8,18 +8,14 @@ import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
-export default async function ChatPage({
-  params,
-}: {
-  params: { chatId: any }; // Ensure `chatId` matches the dynamic route segment
-}) {
-  const { chatId } = params; // Extract `chatId` from dynamic route
-  console.log("Chat ID:", chatId);
+const ChatPage = async ({ params }: { params: Promise<{ chatId: string }> }) => {
+  const { chatId } = await params; // Await the promise to extract `chatId`
 
   const { userId } = await auth();
   if (!userId) {
     return redirect("/sign-in");
   }
+
   const _chats = await db.select().from(chats).where(eq(chats.userId, userId));
   if (!_chats) {
     return redirect("/");
@@ -52,4 +48,6 @@ export default async function ChatPage({
       </div>
     </div>
   );
-}
+};
+
+export default ChatPage;
