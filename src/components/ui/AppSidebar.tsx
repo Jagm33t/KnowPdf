@@ -153,7 +153,8 @@ const AppSidebar = ({ chats, chatId, isPro }: Props) => {
           onClick={async () => {
             setLoading(true);
             const response = await axios.get("/api/stripe/");
-            window.location.href = response.data.url;
+            console.log("response.data.url",response.data.url,response);
+            // window.location.href = response.data.url;
             setLoading(false);
           }}
         >

@@ -7,17 +7,23 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-const return_url = process.env.NEXT_BASE_URL + "/";
+const return_url = process.env.NEXT_BASE_URL
+  ? process.env.NEXT_BASE_URL + "/"
+  : "https://know-pdf-98qy.vercel.app/";
+
+// Log return_url to confirm it has the correct format
+
 
 export async function GET() {
+  console.log("Return URL:", return_url);
   try {
     const { userId } = await auth();
     const user = await currentUser();
-
+   
     if (!userId) {
       return new NextResponse("unauthorized", { status: 401 });
     }
-
+    console.log("Return URL:", return_url);
     const _userSubscriptions = await db
       .select()
       .from(userSubscriptions)
@@ -30,7 +36,7 @@ export async function GET() {
       });
       return NextResponse.json({ url: stripeSession.url });
     }
-
+    console.log("Return URL:", return_url);
     // user's first time trying to subscribe
     const stripeSession = await stripe.checkout.sessions.create({
       success_url: return_url,
