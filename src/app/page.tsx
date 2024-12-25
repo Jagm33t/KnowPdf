@@ -71,6 +71,15 @@ export default async function Home() {
     </div>
   </MaxWidthWrapper>
   <MaxWidthWrapper>
+  <div className="flex justify-center items-center my-12">
+        <video
+          controls
+          className="rounded-md shadow-2xl w-full max-w-3xl"
+        >
+          <source src="/chat-vid.mp4" type="video/mp4" />
+          
+        </video>
+      </div>
   {/* New Section 1 */}
   <div className="flex flex-col-reverse lg:flex-row items-center my-20">
     <div className="lg:w-1/2 text-left px-6">
@@ -136,7 +145,15 @@ export default async function Home() {
     </div>
   </div>
 
-
+  <div className="flex justify-center items-center my-12">
+        <video
+          controls
+          className="rounded-md shadow-2xl w-full max-w-3xl"
+        >
+          <source src="/notes-vid.mp4" type="video/mp4" />
+          
+        </video>
+      </div>
   
 </MaxWidthWrapper>
  {/* Footer Section */}
