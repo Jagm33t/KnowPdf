@@ -156,30 +156,46 @@ export default async function Home() {
       </div>
   
 </MaxWidthWrapper>
- {/* Footer Section */}
- <div className="bg-gray-20 text-black py-8 mt-20">
-    <div className="flex justify-between items-center px-6">
-      <div className="flex items-center space-x-4">
+<MaxWidthWrapper>
+  {/* Footer Section */}
+  <div className="bg-gray-20 text-black py-8 mt-20">
+    <div className="flex flex-col sm:flex-row justify-between items-center px-6 space-y-4 sm:space-y-0">
+      {/* Logo Section */}
+      <div className="flex flex-col sm:flex-row items-center w-full sm:w-auto space-y-4 sm:space-y-0 sm:space-x-4">
         <Image
           src="/chat-logo.png"
           alt="Scruby AI Logo"
           width={40}
           height={40}
-          className="rounded-full"
+          className="rounded-full mx-auto sm:mx-0"
         />
-        <span className="text-lg font-semibold">Scruby AI</span>
+        <span className="text-lg font-semibold text-center sm:text-left">Scruby AI</span>
       </div>
-      <div className="flex space-x-6 text-lg">
-        <a href="/contact" className="hover:underline">Contact</a>
-        <a href="/blog" className="hover:underline">Blog</a>
-        <a href="/privacy" className="hover:underline">Privacy</a>
-        <a href="/terms" className="hover:underline">Terms</a>
+
+      {/* Navigation Links */}
+      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 text-lg">
+        <a href="/contact" className="hover:underline">
+          Contact
+        </a>
+        <a href="/blog" className="hover:underline">
+          Blog
+        </a>
+        <a href="/privacy" className="hover:underline">
+          Privacy
+        </a>
+        <a href="/terms" className="hover:underline">
+          Terms
+        </a>
       </div>
     </div>
+
+    {/* Copyright Section */}
     <div className="text-center mt-4 text-sm">
-    <span>&copy; {new Date().getFullYear()} Scruby AI. All Rights Reserved.&rsquo;</span>
+      <span>&copy; {new Date().getFullYear()} Scruby AI. All Rights Reserved.</span>
     </div>
   </div>
+</MaxWidthWrapper>
+
 
   
 </>
