@@ -5,7 +5,7 @@ import { DrizzleChat } from "@/lib/db/schema";
 import { Input } from "./input";
 import { useChat } from "ai/react";
 import { Button } from "./button";
-import { Send, Share, Download, RefreshCw } from "lucide-react"; // ShadCN (Lucide) icons
+import { Send, Share, Download, RefreshCw } from "lucide-react"; 
 import MessageList from "./MessageList";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -23,21 +23,23 @@ interface Props {
   chatId: string;
   chats: DrizzleChat[];
   appendedMessage?: string[];
+  isPro: boolean;
 }
 
-const ChatComponent = ({ chatId, chats }: Props) => {
+const ChatComponent = ({ chatId, chats, isPro }: Props) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [shareableLink, setShareableLink] = useState<string>("");
   const [activeView, setActiveView] = useState<"Analyze" | "Notes">("Analyze");
   const [loading, setLoading] = useState(false);
   const [appendedMessage, setAppendedMessage] = useState<string[]>([]); 
 
+  
+  const [inputDisabled, setInputDisabled] = useState<boolean>(false);
 
   const handleSetLoading = (isLoading: boolean) => {
     setLoading(isLoading);
-    console.log("loading ",loading)
+    // console.log("loading ",loading)
   };
-
 
   // Fetching messages via useQuery
   const { data, isLoading, refetch } = useQuery({
@@ -46,6 +48,7 @@ const ChatComponent = ({ chatId, chats }: Props) => {
       const response = await axios.post<Message[]>("/api/get-messages", {
         chatId,
       });
+      console.log("messages", data)
       return response.data;
     },
   });
@@ -63,6 +66,7 @@ const ChatComponent = ({ chatId, chats }: Props) => {
   }, [chatId]);
 
   useEffect(() => {
+    console.log("Updated messages:", messages);
     const messageContainer = document.getElementById("message-container");
     if (messageContainer) {
       messageContainer.scrollTo({
@@ -117,12 +121,30 @@ const ChatComponent = ({ chatId, chats }: Props) => {
   };
 
   const handleMessageContentAdd = (messageContent: string) => {
-    console.log("Adding message content:", messageContent);
-  
     // Append the new message content to the previous state (messages)
     setAppendedMessage((prevMessages) => [...prevMessages, messageContent]);
   };
 
+  useEffect(() => {
+    if (!isPro && messages.length >= 2) {
+      setInputDisabled(true);  // Disable input after 2 messages if not Pro
+    } else {
+      setInputDisabled(false); // Enable input if Pro or less than 2 messages
+    }
+  }, [isPro, messages.length]);
+
+  const handleInputSubmit = (e: React.FormEvent) => {
+    e.preventDefault();  // Prevent default form submission
+
+    // Allow submission only if input is enabled
+    if (inputDisabled) {
+      toast.error("Message limit reached. Please subscribe to Pro for more messages.");
+      return;
+    }
+    
+    // Proceed with submitting the message if input is enabled
+    handleSubmit(e);
+  };
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -194,6 +216,7 @@ const ChatComponent = ({ chatId, chats }: Props) => {
             className="hover:text-[#33679c]"
             title="Reset chat"
             onClick={handleResetChat}
+            disabled={!isPro} 
           >
             <RefreshCw className="w-5" />
           </button>
@@ -211,59 +234,65 @@ const ChatComponent = ({ chatId, chats }: Props) => {
       {/* Conditional Rendering Based on Active View */}
       {activeView === "Analyze" ? (
         <div id="message-container" className="flex-1 overflow-y-auto px-4 py-2">
-          <MessageList onMessageContentAdd={handleMessageContentAdd } messages={messages} isLoading={isLoading} />
+          <MessageList onMessageContentAdd={handleMessageContentAdd }  messages={messages}  isLoading={isLoading} />
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto px-4 py-2">
           {/* Pass chatId to NotesEditor */}
-          <NotesEditor appendedMessage={appendedMessage}  chats={chats} chatId={chatId} setLoadingState={handleSetLoading} />
+          <NotesEditor appendedMessage={appendedMessage} isPro={isPro} chats={chats} chatId={chatId} setLoadingState={handleSetLoading} />
         </div>
       )}
-
-{activeView === "Analyze" && (
+  
+      {activeView === "Analyze" && (
         <div>
           {/* Predefined Buttons */}
           <div className="w-full bg-white px-5 py-3 flex gap-2">
-        <Button
-          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
-          onClick={() => setInput("Summarize the content.")}
-        >
-          Summarize
-        </Button>
-        <Button
-          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
-          onClick={() => setInput("Highlight important information in the content.")}
-        >
-          Highlight
-        </Button>
-        <Button
-          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
-          onClick={() => setInput("Simplify the content.")}
-        >
-          Simplify
-        </Button>
-        <Button
-          className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
-          onClick={() => setInput("Enhance the content.")}
-        >
-          Enhance
-        </Button>
-      </div>
-
+            <Button
+              className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+              onClick={() => setInput("Summarize the content.")}
+            >
+              Summarize
+            </Button>
+            <Button
+              className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+              onClick={() => setInput("Highlight important information in the content.")}
+            >
+              Highlight
+            </Button>
+            <Button
+              className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+              onClick={() => setInput("Simplify the content.")}
+            >
+              Simplify
+            </Button>
+            <Button
+              className="bg-white hover:bg-[#f6f5f8] text-[#314862] border-[#f6f5f8] border"
+              onClick={() => setInput("Enhance the content.")}
+            >
+              Enhance
+            </Button>
+          </div>
+  
           {/* Input Form */}
-          <form onSubmit={handleSubmit} className="w-full bg-white px-5 py-4">
+          <form onSubmit={handleInputSubmit} className="w-full bg-white px-5 py-4">
             <div className="flex items-center">
-              <Input value={input} onChange={handleInputChange} placeholder="Ask any question..." className="w-full" maxLength={800} />
-              <Button type="submit" className="bg-[#192c56] ml-2">
-                <Send className="h-4 w-4" />
-              </Button>
+              {inputDisabled ? (
+                <div className="text-sm text-red-500">You need to subscribe to Pro to send more messages.</div>
+              ) : (
+                <>
+                  <Input value={input} onChange={handleInputChange} placeholder="Ask any question..." className="w-full" maxLength={800} disabled={inputDisabled} />
+                  <Button type="submit" className="bg-[#192c56] ml-2" disabled={inputDisabled}>
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
             </div>
           </form>
         </div>
       )}
-
     </div>
   );
+  
 };
 
 export default ChatComponent;

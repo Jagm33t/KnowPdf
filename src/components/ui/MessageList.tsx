@@ -8,6 +8,7 @@ type Props = {
   isLoading: boolean;
   messages: Message[];
   onMessageContentAdd: (content: string) => void; 
+ 
 };
 
 const MessageList = ({ messages, isLoading}: Props) => {

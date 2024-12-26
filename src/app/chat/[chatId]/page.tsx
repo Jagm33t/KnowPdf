@@ -43,7 +43,7 @@ const ChatPage = async ({ params }: { params: Promise<{ chatId: string }> }) => 
 
         {/* Chat Component */}
         <div className="flex-[3] border-l-2 border-l-gray-300 bg-[#F3F2F1]">
-          <ChatComponent chats={_chats} chatId={chatId} />
+          <ChatComponent chats={_chats} chatId={chatId} isPro={isPro}/>
         </div>
       </div>
     </div>

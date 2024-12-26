@@ -29,7 +29,8 @@ export async function POST(req: Request) {
     const prompt = {
       role: "system",
       content: `Use the following pieces of context and previous conversation (if applicable) to answer the user's question in markdown format.
-      If the context does not provide the answer, just say you don't know. Do not make up an answer.
+      If the question refers to an uploaded PDF, file, or document, extract and summarize the relevant information from the content of the uploaded file.
+      If the context does not provide the answer, respond with something like "I'm not sure about that. Could you try asking in more detail or refine your question? Alternatively, the information might not be available at the moment." Aim to provide helpful guidance and maintain a conversational tone.
     
       ----------------
       PREVIOUS CONVERSATION:

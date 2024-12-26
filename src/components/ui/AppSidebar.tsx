@@ -63,9 +63,9 @@ const AppSidebar = ({ chats, chatId, isPro }: Props) => {
     <div className="flex items-center cursor-pointer">
       <Avatar className="w-8 h-8 mt-1">
         <AvatarImage src="/chat-logo.png" className="object-cover" />
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarFallback>Scruby AI</AvatarFallback>
       </Avatar>
-      <h1 className="text-xl text-black ml-1">Scruby</h1>
+      <h1 className="text-xl text-black ml-1">Scruby AI</h1>
     </div>
   </Link>
 </div>

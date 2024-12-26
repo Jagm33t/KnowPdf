@@ -12,15 +12,20 @@ const NotesEditor = ({
   chats,
   appendedMessage,
   setLoadingState,
+  isPro
 }: {
   chats: DrizzleChat[];
   chatId: string;
   appendedMessage?: string[];
   setLoadingState: (isLoading: boolean) => void;
+  isPro: boolean;
 }) => {
   const [notes, setNotes] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false); 
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [editorDisabled, setEditorDisabled] = useState<boolean>(false);
+
+  const maxContentLength = 200;  // Define the maximum content length
 
   const editor = useEditor({
     extensions: [
@@ -52,7 +57,7 @@ const NotesEditor = ({
         setNotes("Please add your first note.");
         return;
       }
-     
+
       setLoading(true);
       setLoadingState(true); // Update parent loading state
       setError(null);
@@ -68,7 +73,8 @@ const NotesEditor = ({
         }
       } catch (err) {
         console.log("Error:", err);
-        console.log(error)
+        setError("Error fetching notes");
+        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -84,6 +90,15 @@ const NotesEditor = ({
       });
     }
   }, [appendedMessage, editor]);
+
+  useEffect(() => {
+    // Disable the editor if the content length exceeds the limit and user is not Pro
+    if (editor && !isPro && editor.getText().length > maxContentLength) {
+      setEditorDisabled(true);
+    } else {
+      setEditorDisabled(false);
+    }
+  }, [isPro, notes, editor]);
 
   const appendContentInEditor = (newContent: string) => {
     if (editor) {
@@ -123,7 +138,14 @@ const NotesEditor = ({
       {/* Editor Content */}
       <div className="editor-content w-full h-full rounded overflow-hidden relative">
         <div className="h-full overflow-y-auto">
-          <EditorContent editor={editor} />
+          {/* Display message if the editor is disabled */}
+          {editorDisabled ? (
+            <div className="text-sm text-red-500">
+              You need to subscribe to Pro to add more content.
+            </div>
+          ) : (
+            <EditorContent editor={editor} />
+          )}
         </div>
       </div>
     </div>
