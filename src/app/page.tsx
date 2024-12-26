@@ -75,6 +75,7 @@ export default async function Home() {
         <video
           controls
           className="rounded-md shadow-2xl w-full max-w-3xl"
+          preload="metadata"
         >
           <source src="/chat-vid.mp4" type="video/mp4" />
           
@@ -95,6 +96,7 @@ export default async function Home() {
         width={500}
         height={500}
         className="rounded-md shadow-2xl"
+        loading="lazy"
       />
     </div>
   </div>
@@ -135,6 +137,7 @@ export default async function Home() {
         width={500}
         height={500}
         className="rounded-md shadow-2xl"
+        loading="lazy"
       />
     </div>
     <div className="lg:w-1/2 text-left px-6">
@@ -149,6 +152,7 @@ export default async function Home() {
         <video
           controls
           className="rounded-md shadow-2xl w-full max-w-3xl"
+          preload="metadata"
         >
           <source src="/notes-vid.mp4" type="video/mp4" />
           

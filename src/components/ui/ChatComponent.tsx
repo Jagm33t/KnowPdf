@@ -66,7 +66,7 @@ const ChatComponent = ({ chatId, chats, isPro }: Props) => {
   }, [chatId]);
 
   useEffect(() => {
-    console.log("Updated messages:", messages);
+    // console.log("Updated messages:", messages);
     const messageContainer = document.getElementById("message-container");
     if (messageContainer) {
       messageContainer.scrollTo({
