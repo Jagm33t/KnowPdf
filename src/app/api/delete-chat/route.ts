@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { deleteEmbeddings } from "@/lib/pinecone";
 
 interface DeleteChatBody {
   chatId: number;
@@ -41,6 +42,13 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Failed to delete file from S3" }, { status: 500 });
     }
 
+    // Step to delete embeddings from Pinecone using the utility function
+    try {
+      await deleteEmbeddings(fileKey);  // Using fileKey to delete embeddings
+      console.log(`Successfully deleted embeddings for fileKey: ${fileKey}`);
+    } catch (pineconeError) {
+      console.error("Failed to delete embeddings from Pinecone:", pineconeError);
+    }
     // Delete the chat from the database
     await db.delete(chats).where(eq(chats.id, chatId));
 

@@ -48,7 +48,7 @@ export async function GET() {
               name: "Scruby AI",
               description: "Unlimited PDF sessions!",
             },
-            unit_amount: 1100,
+            unit_amount: 1,
             recurring: {
               interval: "month",
             },

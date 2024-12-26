@@ -41,6 +41,7 @@ const MenuBar = ({
       }
 
       const payload = { selectedText, fileKey };
+      console.log("hereeeeeee", selectedText, fileKey);
       const response = await fetch("/api/notes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

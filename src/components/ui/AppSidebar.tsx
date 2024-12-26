@@ -44,6 +44,9 @@ const AppSidebar = ({ chats, chatId, isPro }: Props) => {
 
       if (response.status === 200) {
         toast.success("File deleted successfully!");
+        setTimeout(() => {
+          window.location.reload(); 
+        }, 2000);
       } else {
         toast.error("Failed to delete file.");
       }

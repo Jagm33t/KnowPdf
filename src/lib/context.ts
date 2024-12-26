@@ -47,35 +47,28 @@ export async function getContextFromSelectedText(selectedText: string, fileKey: 
   try {
     // Generate embeddings for the selected text
     const queryEmbeddings = await getEmbeddings(selectedText);
-
     // Initialize Pinecone client
     const client = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY!,
     });
-
     const pineconeIndex = await client.index("know-pdf");
     const namespace = pineconeIndex.namespace(convertToAscii(fileKey));
-
     // Query Pinecone with the embeddings
     const queryResult = await namespace.query({
       topK: 5,
       vector: queryEmbeddings,
       includeMetadata: true,
     });
-
     // Filter matches with a score higher than 0.7
     const qualifyingDocs = queryResult.matches.filter(
       (match) => match.score && match.score > 0.7
     );
-
     // Extract metadata from the matches
     type Metadata = {
       text: string;
       pageNumber: number;
     };
-
     const docs = qualifyingDocs.map((match) => (match.metadata as Metadata).text);
-
     // Join the results and limit context length to 3000 characters
     return docs.join("\n").substring(0, 3000);
   } catch (error) {

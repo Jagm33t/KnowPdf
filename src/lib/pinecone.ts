@@ -99,4 +99,27 @@ async function prepareDocument(page: PDFPage) {
 
 
 
+export async function deleteEmbeddings(fileKey: string) {
+  try {
+    const client = await getPineconeClient();
+    const pineconeIndex = await client.index("know-pdf");
+    const namespace = pineconeIndex.namespace(fileKey); // Use fileKey to identify the namespace
+
+    // Log the namespace deletion attempt
+    console.log(`Attempting to delete all embeddings for namespace: ${fileKey}`);
+
+    // Delete the entire namespace and all of its records
+    const deleteResult = await namespace.deleteAll(); 
+
+    // Log the result of the deletion
+    console.log("Deletion result:", deleteResult);
+    console.log(`Successfully initiated delete operation for embeddings in namespace: ${fileKey}`);
+
+  } catch (error) {
+    console.error("Error deleting embeddings from Pinecone:", error);
+    throw error;
+  }
+}
+
+
 

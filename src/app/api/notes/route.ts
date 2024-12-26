@@ -15,16 +15,15 @@ export async function POST(req: NextRequest) {
     // Parse the incoming request body
     const { selectedText, fileKey } = await req.json();
 
-    console.log("Received data from frontend:", { selectedText, fileKey });
-
+   
     // Step 1: Fetch context from Pinecone
     const context = await getContextFromSelectedText(selectedText, fileKey);
-    console.log("Context retrieved from Pinecone:", context);
-
+    // console.log("Context retrieved from Pinecone:", context);
+    console.log("Received data from frontend:", { selectedText, fileKey });
     // Step 2: Generate a GPT prompt
     const prompt: ChatCompletionRequestMessage = {
       role: "system",
-      content: `You are a helpful assistant. Use the following context to answer the user's query in markdown format. If the context does not contain the answer, respond with "I don't know." Do not make up answers.
+      content: `You are a helpful assistant. Use the following context to answer the user's query in markdown format.
       
       Context:
       ${context}
