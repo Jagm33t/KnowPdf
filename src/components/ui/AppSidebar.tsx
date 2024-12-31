@@ -150,7 +150,7 @@ const AppSidebar = ({ chats, chatId, isPro }: Props) => {
 
       {/* Upgrade and Subscription buttons */}
       <div className="w-full mt-auto space-y-2">
-        <Button
+        {/* <Button
           className=" w-full text-white bg-[#192c56] hover:bg-[#33679c] hover:text-white border-gray-200 border"
           disabled={loading}
           onClick={async () => {
@@ -161,7 +161,7 @@ const AppSidebar = ({ chats, chatId, isPro }: Props) => {
           }}
         >
           Upgrade to Pro Plan
-        </Button>
+        </Button> */}
         <SubscriptionButton isPro={isPro} />
       </div>
     </div>

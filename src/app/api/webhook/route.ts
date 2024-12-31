@@ -6,11 +6,13 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-
 export async function POST(req: Request) {
   const body = await req.text();
-  const requestHeaders = await headers(); // Await headers
-  const signature = requestHeaders.get("Stripe-Signature") as string;
+  const signature = headers().get("Stripe-Signature") as string;
+
+  console.log("Received Stripe webhook");
+  console.log("Request body:", body);
+
   let event: Stripe.Event;
 
   try {
@@ -19,44 +21,67 @@ export async function POST(req: Request) {
       signature,
       process.env.STRIPE_WEBHOOK_SIGNING_SECRET as string
     );
+    console.log("Webhook event verified:", event.type);
   } catch (error) {
-    console.log(error)
-    return new NextResponse("webhook error", { status: 400 });
-
+    console.error("Webhook signature verification failed:", error);
+    return new NextResponse("Webhook error", { status: 400 });
   }
 
   const session = event.data.object as Stripe.Checkout.Session;
 
-  // new subscription created
   if (event.type === "checkout.session.completed") {
-    const subscription = await stripe.subscriptions.retrieve(
-      session.subscription as string
-    );
-    if (!session?.metadata?.userId) {
-      return new NextResponse("no userid", { status: 400 });
+    console.log("Handling 'checkout.session.completed' event");
+    console.log("Session object:", session);
+
+    try {
+      const subscription = await stripe.subscriptions.retrieve(
+        session.subscription as string
+      );
+      console.log("Subscription retrieved:", subscription);
+
+      if (!session?.metadata?.userId) {
+        console.error("Missing userId in session metadata");
+        return new NextResponse("No userId in session metadata", { status: 400 });
+      }
+
+      await db.insert(userSubscriptions).values({
+        userId: session.metadata.userId,
+        stripeSubscriptionId: subscription.id,
+        stripeCustomerId: subscription.customer as string,
+        stripePriceId: subscription.items.data[0].price.id,
+        stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      });
+      console.log("User subscription record inserted into database");
+    } catch (error) {
+      console.error("Error handling 'checkout.session.completed':", error);
+      return new NextResponse("Database insertion error", { status: 500 });
     }
-    await db.insert(userSubscriptions).values({
-      userId: session.metadata.userId,
-      stripeSubscriptionId: subscription.id,
-      stripeCustomerId: subscription.customer as string,
-      stripePriceId: subscription.items.data[0].price.id,
-      stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
-    });
   }
 
   if (event.type === "invoice.payment_succeeded") {
-    const subscription = await stripe.subscriptions.retrieve(
-      session.subscription as string
-    );
-    await db
-      .update(userSubscriptions)
-      .set({
-        stripePriceId: subscription.items.data[0].price.id,
-        stripeCurrentPeriodEnd: new Date(
-          subscription.current_period_end * 1000
-        ),
-      })
-      .where(eq(userSubscriptions.stripeSubscriptionId, subscription.id));
+    console.log("Handling 'invoice.payment_succeeded' event");
+    console.log("Session object:", session);
+
+    try {
+      const subscription = await stripe.subscriptions.retrieve(
+        session.subscription as string
+      );
+      console.log("Subscription retrieved:", subscription);
+
+      await db
+        .update(userSubscriptions)
+        .set({
+          stripePriceId: subscription.items.data[0].price.id,
+          stripeCurrentPeriodEnd: new Date(
+            subscription.current_period_end * 1000
+          ),
+        })
+        .where(eq(userSubscriptions.stripeSubscriptionId, subscription.id));
+      console.log("User subscription record updated in database");
+    } catch (error) {
+      console.error("Error handling 'invoice.payment_succeeded':", error);
+      return new NextResponse("Database update error", { status: 500 });
+    }
   }
 
   return new NextResponse(null, { status: 200 });
