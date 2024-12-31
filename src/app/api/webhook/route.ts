@@ -8,7 +8,15 @@ import Stripe from "stripe";
 
 export async function POST(req: Request) {
   const body = await req.text();
-  const signature = headers().get("Stripe-Signature") as string;
+
+  // Resolve headers promise and get the Stripe-Signature
+  const requestHeaders = await headers();
+  const signature = requestHeaders.get("Stripe-Signature");
+
+  if (!signature) {
+    console.error("Missing Stripe-Signature header");
+    return new NextResponse("Missing Stripe-Signature header", { status: 400 });
+  }
 
   console.log("Received Stripe webhook");
   console.log("Request body:", body);
