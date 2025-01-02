@@ -54,9 +54,13 @@ const MenuBar = ({
       }
 
       const result = await response.json();
-      if (result?.answer) {
-        editor.commands.insertContent(cleanResponse(result.answer));
-      }
+    if (result?.answer) {
+      // Format the content with selected text, "Answer:" in bold, and AI response
+      const formattedResponse = `${selectedText}\n\nAnswer:\n${cleanResponse(result.answer)}`;
+
+      // Insert the formatted response into the editor
+      editor.commands.insertContent(formattedResponse);
+    }
     } catch (error) {
       console.error("Error during AI processing:", error);
     } finally {

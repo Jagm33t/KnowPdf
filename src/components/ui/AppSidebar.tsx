@@ -89,7 +89,7 @@ const AppSidebar = ({ chats, chatId, isPro }: Props) => {
                 Please upload a PDF to start a new chat. Only PDF files are accepted.
               </DialogDescription>
             </DialogHeader>
-            <FileUpload /> {/* Directly call FileUpload inside the dialog */}
+            <FileUpload isPro={isPro}/> {/* Directly call FileUpload inside the dialog */}
           </DialogContent>
         </Dialog>
       </div>

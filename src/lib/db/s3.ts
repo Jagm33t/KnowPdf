@@ -4,6 +4,9 @@ export async function uploadToS3(file: File) {
   try {
     const s3 = new AWS.S3({
       region: "us-west-2",
+      httpOptions: {
+        timeout: 300000, // Set timeout to 5 minutes (adjust if necessary)
+      },
       credentials: {
         accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID!,
         secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY!,
@@ -19,18 +22,17 @@ export async function uploadToS3(file: File) {
       Body: file,
     };
 
-    // Upload the file to S3 and track progress
+    // Use upload method (automatically handles multipart upload for large files)
     const upload = s3
       .upload(params)
       .on("httpUploadProgress", (evt: AWS.S3.ManagedUpload.Progress) => {
         const progress = Math.round((evt.loaded * 100) / evt.total);
         console.log(`Uploading to S3... ${progress}%`);
       })
-      .promise();
+      .promise(); // This returns a promise that resolves once the upload is complete.
 
-    // Wait for the upload to complete
-    await upload;
-    // console.log("Successfully uploaded to S3", file_key);
+    const data = await upload;
+    console.log("Successfully uploaded to S3", data);
 
     return {
       file_key,

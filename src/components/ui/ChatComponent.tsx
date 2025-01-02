@@ -126,7 +126,7 @@ const ChatComponent = ({ chatId, chats, isPro }: Props) => {
   };
 
   useEffect(() => {
-    if (!isPro && messages.length >= 2) {
+    if (!isPro && messages.length >= 20) {
       setInputDisabled(true);  // Disable input after 2 messages if not Pro
     } else {
       setInputDisabled(false); // Enable input if Pro or less than 2 messages

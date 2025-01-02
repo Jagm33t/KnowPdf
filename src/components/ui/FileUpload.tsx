@@ -8,7 +8,11 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-const FileUpload = () => {
+
+type Props = {
+  isPro: boolean;
+};
+const FileUpload = ({ isPro }: Props) => {
   const router = useRouter();
   const [uploading, setUploading] = React.useState(false); // Controls the uploading state
   const { mutate } = useMutation({
@@ -26,14 +30,15 @@ const FileUpload = () => {
       return response.data;
     },
   });
-
+ 
+  const fileSizeLimit = isPro ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "application/pdf": [".pdf"] },
     maxFiles: 1,
     onDrop: async (acceptedFiles) => {
       const file = acceptedFiles[0];
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("File too large");
+      if (file.size > fileSizeLimit) {
+        toast.error("File too large Subcribe to Pro ");
         return;
       }
 
@@ -43,6 +48,7 @@ const FileUpload = () => {
 
         if (!data?.file_key || !data.file_name) {
           toast.error("Something went wrong during upload");
+          setUploading(false); 
           return;
         }
 
