@@ -8,7 +8,7 @@ const DAY_IN_MS = 1000 * 60 * 60 * 24;
 export const checkSubscription = async () => {
   // Step 1: Check if the user is authenticated
   const { userId } = await auth();
-  console.log("User ID:", userId);  // Log user ID to see if the user is authenticated
+  
   if (!userId) {
     console.log("No userId found. Returning false.");
     return false;  // No user authenticated
@@ -20,7 +20,7 @@ export const checkSubscription = async () => {
     .from(userSubscriptions)
     .where(eq(userSubscriptions.userId, userId));
 
-  console.log("User Subscriptions:", _userSubscriptions);  // Log the subscriptions found
+  
 
   if (!_userSubscriptions[0]) {
     console.log("No subscriptions found. Returning false.");

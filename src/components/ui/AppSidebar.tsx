@@ -26,7 +26,7 @@ const AppSidebar = ({ chats, chatId, isPro }: Props) => {
   const handleDelete = async (chatId: string, fileKey: string) => {
     try {
        
-      console.log("Deleting chat with ID:", chatId, "File Key:", fileKey);
+     
       console.log(loading)
       // Step 1: Delete the messages associated with the chatId
       const deleteMessagesResponse = await axios.delete("/api/delete-messages", {

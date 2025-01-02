@@ -27,7 +27,7 @@ export async function uploadToS3(file: File) {
       .upload(params)
       .on("httpUploadProgress", (evt: AWS.S3.ManagedUpload.Progress) => {
         const progress = Math.round((evt.loaded * 100) / evt.total);
-        console.log(`Uploading to S3... ${progress}%`);
+        console.log(`${progress}%`);
       })
       .promise();
 

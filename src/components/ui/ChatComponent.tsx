@@ -48,7 +48,7 @@ const ChatComponent = ({ chatId, chats, isPro }: Props) => {
       const response = await axios.post<Message[]>("/api/get-messages", {
         chatId,
       });
-      console.log("messages", data)
+     
       return response.data;
     },
   });
