@@ -30,8 +30,7 @@ export const checkSubscription = async () => {
   const userSubscription = _userSubscriptions[0];
 
   // Step 3: Log subscription details
-  console.log("Stripe Price ID:", userSubscription.stripePriceId);
-  console.log("Current Period End:", userSubscription.stripeCurrentPeriodEnd);
+ 
 
   // Step 4: Check if stripeCurrentPeriodEnd exists and is valid
   const isValid =
@@ -39,7 +38,7 @@ export const checkSubscription = async () => {
     userSubscription.stripeCurrentPeriodEnd &&
     userSubscription.stripeCurrentPeriodEnd.getTime() + DAY_IN_MS > Date.now();
 
-  console.log("Is Valid Subscription:", isValid);  // Log whether the subscription is valid
+
 
   return !!isValid;
 };

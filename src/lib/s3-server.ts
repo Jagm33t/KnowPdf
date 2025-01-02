@@ -10,6 +10,9 @@ export async function downloadFromS3(file_key: string) {
     // Create an S3 client instance
     const s3 = new AWS.S3({
       region: "us-west-2", // Replace with your bucket's region
+      httpOptions: {
+        timeout: 300000, // Set timeout to 5 minutes (300000 ms)
+      },
     });
     // Define the parameters for the S3 getObject request
     const params = {

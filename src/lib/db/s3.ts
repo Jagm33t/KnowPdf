@@ -33,7 +33,7 @@ export async function uploadToS3(file: File) {
 
     // Wait for the upload to complete
     await upload;
-    // console.log("Successfully uploaded to S3", file_key);
+  
 
     return {
       file_key,
@@ -65,7 +65,7 @@ export async function deleteS3File(fileKey: string) {
       })
       .promise();
 
-    console.log(`Successfully deleted file: ${fileKey}`);
+    
 
     // Return success status
     return { success: true, result };

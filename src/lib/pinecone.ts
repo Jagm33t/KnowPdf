@@ -45,8 +45,23 @@ export async function loadS3IntoPinecone(fileKey: string) {
   const namespace = pineconeIndex.namespace(convertToAscii(fileKey));
 
   console.log("inserting vectors into pinecone");
-  await namespace.upsert(vectors);
+  const batchSize = 100; // Adjust batch size based on the vector size
+  const batches = [];
+  for (let i = 0; i < vectors.length; i += batchSize) {
+    batches.push(vectors.slice(i, i + batchSize));
+  }
 
+  // Upload batches to Pinecone
+  for (const batch of batches) {
+    try {
+      await namespace.upsert(batch);
+      console.log(`Batch of ${batch.length} vectors inserted successfully.`);
+    } catch (error) {
+      console.error("Error uploading batch to Pinecone:", error);
+    }
+  }
+
+  // Return the first document as a sample
   return documents[0];
 }
 

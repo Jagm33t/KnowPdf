@@ -17,7 +17,7 @@ const ChatPage = ({ params }: { params: Promise<{ chatId: string }> }) => {
 
     // Check subscription before proceeding
     return checkSubscription().then(async (isPro) => {
-      console.log("Is Pro Plan:", isPro);
+      // console.log("Is Pro Plan:", isPro);
 
       // Proceed with chat and PDF fetching after subscription check
       const _chats = await db.select().from(chats).where(eq(chats.userId, userId));
