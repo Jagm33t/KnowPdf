@@ -22,17 +22,18 @@ export async function uploadToS3(file: File) {
       Body: file,
     };
 
-    // Use upload method (automatically handles multipart upload for large files)
+    // Upload the file to S3 and track progress
     const upload = s3
       .upload(params)
       .on("httpUploadProgress", (evt: AWS.S3.ManagedUpload.Progress) => {
         const progress = Math.round((evt.loaded * 100) / evt.total);
         console.log(`Uploading to S3... ${progress}%`);
       })
-      .promise(); // This returns a promise that resolves once the upload is complete.
+      .promise();
 
-    const data = await upload;
-    console.log("Successfully uploaded to S3", data);
+    // Wait for the upload to complete
+    await upload;
+    // console.log("Successfully uploaded to S3", file_key);
 
     return {
       file_key,
