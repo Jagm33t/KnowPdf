@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       pdfUrl: getS3Url(file_key),
       userId,
     }).returning({
-      insertId: chats.id,
+      insertedId: chats.id,
     });
     
     // Use `insertId` instead of `insertedId`
@@ -40,13 +40,13 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(
-      { 
-        chat_id: chat_id[0].insertId,
-       },
+      {
+        chat_id: chat_id[0].insertedId,
+      },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error in /api/create-chat:", error);
+    console.error(error);
     return NextResponse.json(
       { error: "internal server error" },
       { status: 500 }

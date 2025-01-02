@@ -4,6 +4,9 @@ export async function uploadToS3(file: File) {
   try {
     const s3 = new AWS.S3({
       region: "us-west-2",
+      httpOptions: {
+        timeout: 300000, // Set timeout to 5 minutes (adjust if necessary)
+      },
       credentials: {
         accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID!,
         secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY!,
