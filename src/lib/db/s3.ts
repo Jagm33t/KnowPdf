@@ -79,8 +79,8 @@ export async function deleteS3File(fileKey: string) {
 
 
 export function getS3Url(file_key: string) {
-  console.log("Inside getS3Url function");
+  
   const url = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_S3_REGION}.amazonaws.com/${file_key}`;
-  console.log("jatttttttttttttttttttttt",url)
+
   return url;
 }
